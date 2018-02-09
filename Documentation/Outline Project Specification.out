@@ -1,0 +1,11 @@
+\BOOKMARK [1][-]{section.1}{Project description}{}% 1
+\BOOKMARK [1][-]{section.2}{Proposed tasks}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Investigate Hansard Data}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Investigation of XML Parsers for Python}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Investigate Sentiment Analysis Tools}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Create Training Dataset}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{Train Sentiment Analysis Model}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Project deliverables}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Sentiment Analysis Model}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Training and Testing Datasets}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.3}{Data Sentiment labelling Tool}{section.3}% 11

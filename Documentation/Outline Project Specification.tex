@@ -1,40 +1,79 @@
-\documentclass[draft]{article}
-\usepackage[utf8]{inputenc}
+\documentclass[11pt,fleqn,twoside]{article}
+\usepackage{makeidx}
+\makeindex
+\usepackage{palatino} %or {times} etc
+\usepackage{plain} %bibliography style
+\usepackage{amsmath} %math fonts - just in case
+\usepackage{amsfonts} %math fonts
+\usepackage{amssymb} %math fonts
+\usepackage{lastpage} %for footer page numbers
+\usepackage{fancyhdr} %header and footer package
+\usepackage{mmpv2}
+%\usepackage{url}
+\usepackage{hyperref}
 
-\author{Adam Neaves (adn2@aber.ac.uk)}
-\title{Hansard Historical Sentiment Analysis and Comparison}
-\date{\today}
+% the following packages are used for citations - You only need to include one.
+%
+% Use the cite package if you are using the numeric style (e.g. IEEEannot).
+% Use the natbib package if you are using the author-date style (e.g. authordate2annot).
+% Only use one of these and comment out the other one.
+\usepackage{cite}
+%\usepackage{natbib}
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
+
 \begin{document}
-\maketitle
-Degree Scheme: GH7JP, Artificial Intelligence and Robotics\\
-Module Code: CS39440\\
-Supervisor: Amanda Clare (afc@aber.ac.uk)\\
-Version: 1.0 (First Draft)\\
 
-\clearpage
-\section{Project Description}
-The Hansard  Sentiment Analysis will develop a Python based Sentiment Analysis tool trained on Parliamentary debates, and aims to provide an output comparing the sentiment of modern Parliament with sentiment found in the historical Hansard Dataset.
-\\ \\
-The Hansard dataset provides a written record of all written and oral debates held in the House of Commons and the House of Lords from between 1803 and 2004, in XML. Using this archive of data, I hope to be able to extract the debates themselves
-from the dataset and produce a record of sentiment on a number of topics, which can then be compared to the modern debates, as they are released. In doing this, I should be able to detect any patterns in the change of opinion, hopefully showing trends
-in how political opinion has changed over the past 200 years. 
-\\ \\
-Python 3 has been selected as the language of choice, due to it's accessibility, and the availability of multiple packages that may prove useful for this project, such as BeautifulSoup for XML parsing, an spaCy or NLTK for the Natural Language Processing.
+\name{Adam Neaves}
+\userid{adn2}
+\projecttitle{Hansard Historical Sentiment Analysis and Comparison}
+\projecttitlememoir{Hansard Sentiment Analysis} %same as the project title or abridged version for page header
+\reporttitle{Outline Project Specification}
+\version{0.1}
+\docstatus{Draft}
+\modulecode{CS39440}
+\degreeschemecode{GH7JP}
+\degreeschemename{Artificial Intelligence and Robotics}
+\supervisor{Amanda Clare} % e.g. Neil Taylor
+\supervisorid{afc}
+\wordcount{}
 
-\section{Proposed Tasks}
+%optional - comment out next line to use current date for the document
+%\documentdate{10th February 2014}
+\mmp
+
+\setcounter{tocdepth}{3} %set required number of level in table of contents
+
+
+%==============================================================================
+\section{Project description}
+%==============================================================================
+The Hansard  Sentiment Analysis will develop a Python based Sentiment Analysis tool trained on Parliamentary debates, and aims to provide an output comparing the sentiment of modern Parliament with sentiment found in the historical Hansard Dataset. 
+\par
+The Hansard dataset provides a written record of all written and oral debates held in the House of Commons and the House of Lords from between 1803 and 2004, in XML. Using this archive of data, I hope to be able to extract the debates themselves from the dataset and produce a record of sentiment on a number of topics, which can then be compared to the modern debates, as they are released. In doing this, I should be able to detect any patterns in the change of opinion, hopefully showing trends in how political opinion has changed over the past 200 years. 
+\par
+Python 3 has been selected as the language of choice, due to it's accessibility, and the availability of multiple packages that may prove useful for this project, such as BeautifulSoup for XML parsing, and spaCy or NLTK for the Natural Language Processing.
+
+
+%==============================================================================
+\section{Proposed tasks}
+%==============================================================================
 \subsection{Investigate Hansard Data}
-The Hansard Dataset provides full records of debates in an XML format. However, because these are historical documents going back over 200 years, the formatting of the data may be a little messy at times. I will likely have to manually look at examples of the
-data to work out how I can confidently extract the relevant data from these files, and which parts are going to be useful to the project. For instance, each file appears to start with a list of the present members of parliament, which may not be useful for my aims.
+The Hansard Dataset provides full records of debates in an XML format. However, because these are historical documents going back over 200 years, the formatting of the data may be a little messy at times. I will likely have to manually look at examples of the data to work out how I can confidently extract the relevant data from these files, and which parts are going to be useful to the project. From preliminary looks, it appears that each series of Hansard data is formatted slightly different from each other, which is something I will have to be able to deal with.
 \subsection{Investigation of XML Parsers for Python}
-The provided Hansard Dataset is a series of XML files. These files need to be parsed and tidied by the system before they can be used for Sentiment Analysis. I need to investigate the XML parsers available for Python, and work out which will work best for me.
+The provided Hansard Dataset is a series of XML files. These files need to be parsed and tidied by the system before they can be used for Sentiment Analysis. I need to investigate the XML parsers available for Python, and work out which will work best for me. BeautifulSoup is a popular one, but there is also XBase, which would allow me to query the data ina  similar fashion to using SQL.
 \subsection{Investigate Sentiment Analysis Tools}
-There are a number of Natural Language Processing packages available for Python. I need to examine the options available and choose a package based on factors, such as ease of use, speed, and licensing. I also need to decide on the factors that I will be basing my decision on.
+There are a number of Natural Language Processing packages available for Python. I need to examine the options available and choose a package based on chosen factors, which will also need to be selected and prioritized.
 \subsection{Create Training Dataset}
 The sentiment analysis tool will be a form of machine learning. In order to efficiently train the system, I will have to provide it with a set of labelled training data, which will have to be created by hand. This may involve the creation of a tool to aid me in labelling the data,
 the creation of which should save time in the long run when labelling the data.
 \subsection{Train Sentiment Analysis Model}
-Once the training and testing datasets have been created, I can train the Sentiment Analysis model on the data. This should produce the model 
-\section{Project Deliverables}
+Once the training and testing datasets have been created, I can train the Sentiment Analysis model on the data. This should produce the model that I will use to assign sentiment to 
+
+
+%==============================================================================
+\section{Project deliverables}
+%==============================================================================
 \subsection{Sentiment Analysis Model}
 A model trained and tested on the Hansard Dataset, capable of detecting the sentiment from the questions and answers provided in the dataset.
 \subsection{Training and Testing Datasets}
@@ -42,6 +81,35 @@ The datasets used to train and test the Model, which will be provided as an appe
 \subsection{Data Sentiment labelling Tool}
 if it's deemed appropriate, a tool designed to help manually label sentiment in order to produce the training dataset will be created, and delivered alongside the core software.
 \clearpage
-\section{Annotated Bibliography}
-\bibliography{annotatedBib}
+
+%
+% Start to comment out / remove the following lines. They are only provided for instruction for this example template.  You don't need the following section title, because it will be added as part of the bibliography section.
+%
+%==============================================================================
+\section*{Your Bibliography - REMOVE this title and text for final version}
+%==============================================================================
+%
+%You need to include an annotated bibliography. This should list all relevant web pages, books, journals etc. that you have consulted in researching your project. Each reference should include an annotation.
+
+%The purpose of the section is to understand what sources you are looking at.  A correctly formatted list of items and annotations is sufficient. You might go further and make use of bibliographic tools, e.g. BibTeX in a LaTeX document, could be used to provide citations, for example \cite{NumericalRecipes} \cite{MarksPaper} \cite[99-101]{FailBlog} \cite{kittenpic_ref}.  The bibliographic tools are not a requirement, but you are welcome to use them.
+
+%You can remove the above {\em Your Bibliography} section heading because it will be added in by the renewcommand which is part of the bibliography. The correct annotated bibliography information is provided below.
+%
+% End of comment out / remove the lines. They are only provided for instruction for this example template.
+%
+
+
+\nocite{*} % include everything from the bibliography, irrespective of whether it has been referenced.
+
+% the following line is included so that the bibliography is also shown in the table of contents. There is the possibility that this is added to the previous page for the bibliography. To address this, a newline is added so that it appears on the first page for the bibliography.
+\newpage
+\addcontentsline{toc}{section}{Initial Annotated Bibliography}
+
+%
+% example of including an annotated bibliography. The current style is an author date one. If you want to change, comment out the line and uncomment the subsequent line. You should also modify the packages included at the top (see the notes earlier in the file) and then trash your aux files and re-run.
+%\bibliographystyle{authordate2annot}
+\bibliographystyle{IEEEannotU}
+\renewcommand{\refname}{Annotated Bibliography}  % if you put text into the final {} on this line, you will get an extra title, e.g. References. This isn't necessary for the outline project specification.
+\bibliography{mmp} % References file
+
 \end{document}
