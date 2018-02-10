@@ -1,0 +1,60 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{#1}
+\csname url@rmstyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand\BIBentrySTDinterwordspacing{\spaceskip=0pt\relax}
+\providecommand\BIBentryALTinterwordstretchfactor{4}
+\providecommand\BIBentryALTinterwordspacing{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand\BIBforeignlanguage[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+
+\bibitem{Perkins2010}
+\BIBentryALTinterwordspacing
+J.~Perkins, ``{Text Classification For Sentiment Analysis - Naive Bayes
+  Classifier},'' 2010. [Online]. Available:
+  \url{https://streamhacker.com/2010/05/10/text-classification-sentiment-analysis-naive-bayes-classifier/}
+\BIBentrySTDinterwordspacing
+ \begin{quotation}\noindent An online article that describes how the Author
+  trained a Naive Bayes classifier on movie reviews using the NLTK for Python.
+  It may serve as a decent starting off point for how to do something similar.
+  \end{quotation}
+
+\bibitem{Richardson}
+\BIBentryALTinterwordspacing
+L.~Richardson, ``{Beautiful Soup Documentation}.'' [Online]. Available:
+  \url{https://www.crummy.com/software/BeautifulSoup/bs4/doc/}
+\BIBentrySTDinterwordspacing
+ \begin{quotation}\noindent Documentation for BeautifulSoup4, a html/xml parser
+  for Python, which could be useful for dealing with the large messy XML
+  documents. \end{quotation}
+
+\bibitem{Noble1988}
+H.~M. Noble, \emph{{Natural Language Processing}}, 1st~ed., T.~Addis,
+  B.~DuBoulay, and A.~Tate, Eds.\hskip 1em plus 0.5em minus 0.4em\relax Oxford:
+  Blackwell Scientific Publications, 1988, 0632015020.
+ \begin{quotation}\noindent A book that provides a decent overview on Natural
+  Language Processing for computer systems. It does not, however, mention any
+  specifics for Sentiment Analysis, so may not be as useful for this project.
+  \end{quotation}
+
+\bibitem{Bird2009}
+\BIBentryALTinterwordspacing
+S.~Bird, E.~Klein, and E.~Loper, \emph{{Natural Language Processing with
+  Python}}, 1st~ed., 2009, vol.~43, p. 479. [Online]. Available:
+  \url{http://www.amazon.com/dp/0596516495} 9780596516499.
+\BIBentrySTDinterwordspacing
+ \begin{quotation}\noindent A book that works as a guide to the Natural
+  Language Toolkit for Python, a specific package that may be used for the
+  project. \end{quotation}
+
+\end{thebibliography}
