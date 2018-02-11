@@ -29,8 +29,8 @@
 \projecttitle{Hansard Historical Sentiment Analysis and Comparison}
 \projecttitlememoir{Hansard Sentiment Analysis} %same as the project title or abridged version for page header
 \reporttitle{Outline Project Specification}
-\version{0.1}
-\docstatus{Draft}
+\version{1.0}
+\docstatus{Release}
 \modulecode{CS39440}
 \degreeschemecode{GH7JP}
 \degreeschemename{Artificial Intelligence and Robotics}
@@ -50,25 +50,26 @@
 %==============================================================================
 The Hansard  Sentiment Analysis will develop a Python based Sentiment Analysis tool trained on Parliamentary debates, and aims to provide an output comparing the sentiment of modern Parliament with sentiment found in the historical Hansard Dataset. 
 \par
-The Hansard dataset provides a written record of all written and oral debates held in the House of Commons and the House of Lords from between 1803 and 2004, in XML. Using this archive of data, I hope to be able to extract the debates themselves from the dataset and produce a record of sentiment on a number of topics, which can then be compared to the modern debates, as they are released. In doing this, I should be able to detect any patterns in the change of opinion, hopefully showing trends in how political opinion has changed over the past 200 years. 
+The Hansard Dataset provides a written record of all written and oral debates held in the House of Commons and the House of Lords from between 1803 and 2004, in XML. Using this archive of data, I hope to be able to extract the debates themselves from the dataset and produce a record of sentiment on a number of topics, which can then be compared to the modern debates, as they are released. In doing this, I should be able to detect any patterns in the change of opinion, hopefully showing trends in how political opinion has changed over the past 200 years. 
 \par
-Python 3 has been selected as the language of choice, due to it's accessibility, and the availability of multiple packages that may prove useful for this project, such as BeautifulSoup for XML parsing, and spaCy or NLTK for the Natural Language Processing.
+Python 3 has been selected as the language of choice, due to its accessibility, and the availability of multiple packages that may prove useful for this project, such as BeautifulSoup for XML parsing, and spaCy or NLTK for the Natural Language Processing.
 
 
 %==============================================================================
 \section{Proposed tasks}
 %==============================================================================
 \subsection{Investigate Hansard Data}
-The Hansard Dataset provides full records of debates in an XML format. However, because these are historical documents going back over 200 years, the formatting of the data may be a little messy at times. I will likely have to manually look at examples of the data to work out how I can confidently extract the relevant data from these files, and which parts are going to be useful to the project. From preliminary looks, it appears that each series of Hansard data is formatted slightly different from each other, which is something I will have to be able to deal with.
+The Hansard Dataset provides full records of debates in an XML format. However, because these are historical documents going back over 200 years, the formatting of the files can be disorganised. Examples of the data will have to be looked at, to evaluate how the system can confidently extract the relevant data from these files, and which parts are going to be useful to the project. From preliminary investigations, it appears that each series of Hansard Data is formatted slightly differently from each other, which is something the system will have to be able to handle.
 \subsection{Investigation of XML Parsers for Python}
-The provided Hansard Dataset is a series of XML files. These files need to be parsed and tidied by the system before they can be used for Sentiment Analysis. I need to investigate the XML parsers available for Python, and work out which will work best for me. BeautifulSoup is a popular one, but there is also XBase, which would allow me to query the data ina  similar fashion to using SQL.
+The provided Hansard Dataset is a series of XML files. These files need to be parsed and tidied by the system before they can be used for Sentiment Analysis. I need to investigate the XML parsers available for Python, and work out which will work best for me. BeautifulSoup is a popular parser, but there is also XBase, which would allow me to query the data in a similar fashion to using SQL.
 \subsection{Investigate Sentiment Analysis Tools}
-There are a number of Natural Language Processing packages available for Python. I need to examine the options available and choose a package based on chosen factors, which will also need to be selected and prioritized.
+There are a number of Natural Language Processing packages available for Python. The options will need examining, and a package selected based on chosen factors, which will also need to be selected and prioritized. Additionally, the type of sentiments assigned will have to be chosen, as there are options for either assigning a score for positive or negative, or possibly assign an emotional label to the speaker, such as "happy", "sad" or "angry".
 \subsection{Create Training Dataset}
-The sentiment analysis tool will be a form of machine learning. In order to efficiently train the system, I will have to provide it with a set of labelled training data, which will have to be created by hand. This may involve the creation of a tool to aid me in labelling the data,
-the creation of which should save time in the long run when labelling the data.
+The sentiment analysis tool will be a form of machine learning. In order to efficiently train the system, a set of labelled training data will have to be provided, which will have to be created by hand. This may involve the creation of a tool to aid in labelling the data. The creation of this will save time over the course of the project.
 \subsection{Train Sentiment Analysis Model}
-Once the training and testing datasets have been created, I can train the Sentiment Analysis model on the data. This should produce the model that I will use to assign sentiment to 
+Once the training and testing datasets have been created, the Sentiment Analysis model can be trained on the data. This should produce the model that will assign sentiment to speeches made, so that they may be compared.
+\subsection{Investigate Potential Data Sources}
+Each document has a list of attending members of Parliament. It may be possible to find additional data sources that provide more information about the members, such as political party, or date they started at Parliament. If this data is available, it can be used to compare more about the sentiment, perhaps allowing the system to compare sentiment of a particular individual at the start of their Parliamentary position compared to the end, or comparing sentiment between political parties.
 
 
 %==============================================================================
@@ -77,10 +78,9 @@ Once the training and testing datasets have been created, I can train the Sentim
 \subsection{Sentiment Analysis Model}
 A model trained and tested on the Hansard Dataset, capable of detecting the sentiment from the questions and answers provided in the dataset.
 \subsection{Training and Testing Datasets}
-The datasets used to train and test the Model, which will be provided as an appendix to the report written to show what the model was trained on.
+The datasets used to train and test the model, which will be provided as an appendix to the report written to show what the model was trained on.
 \subsection{Data Sentiment labelling Tool}
-if it's deemed appropriate, a tool designed to help manually label sentiment in order to produce the training dataset will be created, and delivered alongside the core software.
-\clearpage
+If it is deemed appropriate, a tool designed to help manually label sentiment in order to produce the training dataset will be created, and delivered alongside the core software.
 
 %
 % Start to comment out / remove the following lines. They are only provided for instruction for this example template.  You don't need the following section title, because it will be added as part of the bibliography section.
