@@ -15,16 +15,16 @@ url_add = ['Parliamentary_Debates_Vol_1_(1803)_to_Vol_41_(Feb_1820)',
 
 save_loc = 'D:\Documents\-Uni Documents\Year 3\Final Year Project\Data\Hansard\S1'
 file_name_format = 'S{}V{:0>4}P{}.zip'
-series = 1
+# this, annoyingly, does not actually encompass EVERY file available
+# im guessing because the government HATES COMPUTER SCIENTISTS
 
-# http://www.hansard-archive.parliament.uk/Parliamentary_Debates_Vol_1_(1803)_to_Vol_41_(Feb_1820)/S1CV0001P0.zip
-# http://www.hansard-archive.parliament.uk/Parliamentary_Debates_Vol_1_(1803)_to_Vol_41_(Feb_1820)/S1V0001P0.zip
+series = 1
 
 # print("FILE NAME FORMAT: {}".format(file_name_format.format(11)))
 for i in range(0, 100):  # change depending on how many files it looks like exist
     for j in range(0, 4):  # just to make sure. Not seen any files with P3 at the end but you never know
         temp_url = '{}{}/{}'.format(url_base, url_add[series-1], file_name_format.format(series, i, j))
-        print("Checking: {}".format(temp_url))
+        print("Checking: {}".format(file_name_format.format(series, i, j)))
         r = requests.get(temp_url)
         status = r.headers['content-type']
 
