@@ -1,3 +1,14 @@
 Python/.idea/*
-Data/Hansard/*
-Data/Parsed Speech/*
+Data/*
+Data/*
+
+# ignore everything in Documentation
+Documentation/*
+
+# except these types of files
+!.tex
+!.bib
+!.pdf
+
+# even if they are in subdirectories
+!*/
