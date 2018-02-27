@@ -1,6 +1,5 @@
 Python/.idea/*
 Data/*
-Data/*
 
 # ignore everything in Documentation
 Documentation/*
