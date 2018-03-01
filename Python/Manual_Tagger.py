@@ -19,16 +19,39 @@
 import textwrap
 import sys
 import random
+import os
 from bs4 import BeautifulSoup as bs
 
 
 class ManualTagger:
 
-    def __init__(self, files):
+    def __init__(self, root_dir):
         print("MANUAL TAGGER CLASS CREATED")
-
-        self.files = files
+        self.files = []
+        self.root_dir = root_dir
+        for root, dirs, files in os.walk(self.root_dir):
+            for file in files:
+                if file.endswith('.xml'):
+                    print("adding {} to list".format(file))
+                    self.files.append(file)
         self.file_count = 0
+
+    def select_file(self):
+        selected = False
+        while not selected:  # need to search through multiple files till one that has not already been done
+            rng = random.randint(0, len(self.files))
+            file = self.files[rng]
+            xml = open(os.path.join(self.root_dir, file))
+            soup = bs(xml, 'xml')
+            speeches = soup.find_all('speech')
+            stance = soup.find('stance')
+            if (speeches is not None) and stance.text() is None:
+                pass
+            else:
+                #  if there are no speech tags we can ignore it, or if the stance has been set
+                print(file, " IS INVALID FILE: NO SPEECH FOUND")
+                del self.files[rng]
+                xml.close()
 
     def read_file(self, file):
         # find topic
@@ -93,5 +116,13 @@ class Display:
 
 
 print("Running: ", sys.argv[0])
-display = Display()
-display.display_menu()
+if len(sys.argv) == 1:
+    print("No root directory provided. Please Provide directory as argument")
+else:
+    if os.path.isdir(sys.argv[1]):
+        print("Root Directory: ", sys.argv[1])
+        tagger = ManualTagger(sys.argv[1])
+        display = Display()
+        display.display_menu()
+    else:
+        print("FIRST ARGUMENT MUST BE DIRECTORY")
