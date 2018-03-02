@@ -37,23 +37,27 @@ class ManualTagger:
         self.file_count = 0
 
     def select_file(self):
-        selected = False
-        while not selected:  # need to search through multiple files till one that has not already been done
-            rng = random.randint(0, len(self.files))
+        while True:  # need to search through multiple files till one that has not already been done
+            rng = random.randint(0, len(self.files)-1)
             file = self.files[rng]
             xml = open(os.path.join(self.root_dir, file))
             soup = bs(xml, 'xml')
             speeches = soup.find_all('speech')
-            stance = soup.find('stance')
-            if (speeches is not None) and stance.text() is None:
-                pass
+            stance = soup.find('stance').text.replace('\n', '')
+
+            if (speeches is not None) and not stance:
+                xml.close()
+                return file
             else:
                 #  if there are no speech tags we can ignore it, or if the stance has been set
-                print(file, " IS INVALID FILE: NO SPEECH FOUND")
+                print(file, " IS INVALID FILE: Either no speech found, or stance already has been added")
                 del self.files[rng]
                 xml.close()
 
     def read_file(self, file):
+        xml = open(os.path.join(self.root_dir, file))
+        soup = bs(xml, 'xml')
+        
         # find topic
         # find member
         # find all instances where topic and member are the same/similar enough (john smith == Mr. Smith)
@@ -109,7 +113,7 @@ class Display:
         print("EDIT SUBJECT")
 
     def quit(self):
-        quit_input = input("Are You Sure you want to quit? Y/N: ").upper()
+        quit_input = input("Are You Sure you want to quit? \nAll Changes to this file will be lost. \nY/N: ").upper()
         if quit_input == 'Y':
             quit()
 # end class Display
@@ -123,6 +127,8 @@ else:
         print("Root Directory: ", sys.argv[1])
         tagger = ManualTagger(sys.argv[1])
         display = Display()
-        display.display_menu()
+        file = tagger.select_file()
+        print("FILE SELECTED: ", file)
+        tagger.read_file(file)
     else:
         print("FIRST ARGUMENT MUST BE DIRECTORY")
