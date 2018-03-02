@@ -22,8 +22,25 @@ class SpeechParser:
 
     def parse_speeches(self, word_soup):
         # finds all member speeches in the provided soup, returning them in a better organised xml soup
+        # SPEECH SOUP LAYOUT
+        # speech
+        #     member
+        #     topic
+        #     stance
+        #     word
+        # /speech
+
+        # DESIRED LAYOUT
+        # <member name="">
+        #     <topic title="">
+        #         <stance>POS</stance>
+        #         <speech>
+        #             words words word
+        #         </speech>
+        #     </topic>
+        # </member>
+        #
         new_soup = bs()
-        # new_soup.is_xml = True
         speech_count = 0
         for contribution in word_soup.find_all('membercontribution'):
 
@@ -32,6 +49,8 @@ class SpeechParser:
             topic = parent.parent.find('title')
 
             if not member or not topic:
+                continue
+            if not topic.text:
                 continue  # no member or topic means we don't want to use this speech
 
             for unwanted_tag in contribution.find_all(['image', 'col']):  # remove unwanted tags
@@ -43,22 +62,27 @@ class SpeechParser:
             for unwanted_tag in topic.find_all(['image', 'col']):  # remove unwanted tags
                 unwanted_tag.decompose()
 
-            # date_tag   = new_soup.new_tag('date')    # create new tags for the soup to contain info
-            topic_tag  = new_soup.new_tag('topic')   # we don't need tags for member cause we can
-            stance_tag = new_soup.new_tag('stance')  # copy it from the original xml
+            # have we seen this member before?
+            member_tag = new_soup.find('member', {'membername': member.text})
+            if not member_tag:
+                # we've not seen this member mentioned before, create new tag
+                member_tag = new_soup.new_tag('member', membername=member.text)
+                topic_tag = new_soup.new_tag('topic', title=topic.text)
+                new_soup.append(member_tag)
+                member_tag.append(topic_tag)
+            else:
+                # we've seen this member before, but have they discussed this topic before.
+                topic_tag = member_tag.find('topic', attrs={'title': topic.text})
+                if not topic_tag:
+                    topic_tag = new_soup.new_tag('topic', title=topic.text)
+                    stance_tag = new_soup.new_tag('stance')
+                    member_tag.append(topic_tag)
+                    topic_tag.append(stance_tag)
+
             speech_tag = new_soup.new_tag('speech')
 
-            new_soup.append(speech_tag)
-            speech_soup = new_soup.contents[len(new_soup.contents)-1]
-            # speech_soup.append(date_tag)
-            # speech_soup.date.append(date.get('format'))
-
-            speech_soup.append(topic_tag)
-            speech_soup.topic.append(topic.text)
-
-            speech_soup.append(member)
-
-            speech_soup.append(stance_tag)
+            topic_tag.append(speech_tag)
+            speech_soup = topic_tag.contents[-1]
 
             speech_text = contribution.text.replace('\n', '')
             speech_soup.append(speech_text)
@@ -116,7 +140,7 @@ class SpeechParser:
 
                     target_soup = date.parent
                     gen_soup = self.parse_speeches(target_soup)
-                    date_soup.find('date', attrs={}).append(gen_soup)       # append found speech to the date tag
+                    date_soup.date.append(gen_soup)       # append found speech to the date tag
                     date_file.write(date_soup.prettify(encoding='utf-8'))   # write to file
                     date_file.close()
 

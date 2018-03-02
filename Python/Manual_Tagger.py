@@ -39,7 +39,7 @@ class ManualTagger:
     def select_file(self):
         while True:  # need to search through multiple files till one that has not already been done
             rng = random.randint(0, len(self.files)-1)
-            file = self.files[rng]
+            file = self.files[0]#rng] # removed random nature for texting, for now
             xml = open(os.path.join(self.root_dir, file))
             soup = bs(xml, 'xml')
             speeches = soup.find_all('speech')
@@ -55,9 +55,34 @@ class ManualTagger:
                 xml.close()
 
     def read_file(self, file):
+        display = Display()
         xml = open(os.path.join(self.root_dir, file))
         soup = bs(xml, 'xml')
-        
+        # FILE LAYOUT
+        # <date>
+        #     <member>
+        #         <topic>
+        #             <stance></stance>
+        #             <speech>
+        #                 words words words
+        #             </speech>
+        #             ...multiple speech available
+        #         </topic>
+        #         ...multiple topics available
+        #     </member>
+        #     ...multiple members available
+        # </date>
+        members = soup.find_all('member')
+        for member in members:
+            topics = member.find_all('topic')
+            for topic in topics:
+                speeches_text = topic.find_all('speech')
+                display.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
+                display.display_menu()
+
+
+
+
         # find topic
         # find member
         # find all instances where topic and member are the same/similar enough (john smith == Mr. Smith)
@@ -91,9 +116,12 @@ class Display:
         i = 1
         for speech in speeches:
             print("Speech ", i, ":")
-            print(textwrap.wrap(speech, self.width))
+            for line in textwrap.wrap(speech.text, self.width):
+                print(line)
+            i += 1
 
     def display_menu(self):
+        self.move_on = False
         while not self.move_on:
             try:
                 new_input = input(self.options_menu).upper()
@@ -126,7 +154,7 @@ else:
     if os.path.isdir(sys.argv[1]):
         print("Root Directory: ", sys.argv[1])
         tagger = ManualTagger(sys.argv[1])
-        display = Display()
+        # display = Display()
         file = tagger.select_file()
         print("FILE SELECTED: ", file)
         tagger.read_file(file)
