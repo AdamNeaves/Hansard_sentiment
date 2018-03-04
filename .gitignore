@@ -1,13 +1,17 @@
 Python/.idea/*
-Data/*
+Data/
 
 # ignore everything in Documentation
 Documentation/*
+Documentation/Dissertation/*
+Documentation/Dissertation/Appendixes/*
+Documentation/Dissertation/Chapters/*
+Documentation/Dissertation/References/*
 
 # except these types of files
-!.tex
-!.bib
-!.pdf
+!*.tex
+!*.bib
+!*.pdf
 
 # even if they are in subdirectories
 !*/
