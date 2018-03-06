@@ -79,16 +79,6 @@ class ManualTagger:
                 speeches_text = topic.find_all('speech')
                 display.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
                 display.display_menu()
-
-
-
-
-        # find topic
-        # find member
-        # find all instances where topic and member are the same/similar enough (john smith == Mr. Smith)
-        # provide to speech display method
-        # get user input
-        pass
 # end class ManualTagger
 
 

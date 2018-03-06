@@ -12,6 +12,7 @@ Documentation/Dissertation/References/*
 !*.tex
 !*.bib
 !*.pdf
+!*sty
 
 # even if they are in subdirectories
 !*/

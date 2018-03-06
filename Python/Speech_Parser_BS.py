@@ -62,7 +62,7 @@ class SpeechParser:
             for unwanted_tag in topic.find_all(['image', 'col']):  # remove unwanted tags
                 unwanted_tag.decompose()
 
-            # have we seen this member before?
+            # have we seen this member before? NEED WAY TO CHECK FOR OTHER NAME FORMS
             member_tag = new_soup.find('member', {'membername': member.text})
             if not member_tag:
                 # we've not seen this member mentioned before, create new tag
@@ -116,7 +116,10 @@ class SpeechParser:
         for file in self.files:
             start_time = time.time()
             print("START NEW FILE: ", file)
-            xml = open(os.path.join(self.dir, file), 'r')  # open XML file
+            try:
+                xml = open(os.path.join(self.dir, file), 'r')  # open XML file
+            except:
+                pass #sometimes external hard drive will blip off and on exactly as we try to load. Try again i guess?
             origin_soup = bs(xml, 'xml')  # open XML file as soup
             date_tag_count = 0
             for date in origin_soup.find_all('date'):
