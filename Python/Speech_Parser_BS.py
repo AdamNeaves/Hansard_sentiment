@@ -65,6 +65,7 @@ class SpeechParser:
             # have we seen this member before? NEED WAY TO CHECK FOR OTHER NAME FORMS
             member_tag = new_soup.find('member', {'membername': member.text})
             if not member_tag:
+                # we may still have seen them before, but using a different form of their name
                 # we've not seen this member mentioned before, create new tag
                 member_tag = new_soup.new_tag('member', membername=member.text)
                 topic_tag = new_soup.new_tag('topic', title=topic.text)
@@ -116,10 +117,15 @@ class SpeechParser:
         for file in self.files:
             start_time = time.time()
             print("START NEW FILE: ", file)
-            try:
-                xml = open(os.path.join(self.dir, file), 'r')  # open XML file
-            except:
-                pass #sometimes external hard drive will blip off and on exactly as we try to load. Try again i guess?
+            retry = 0
+            while retry < 3:
+                try:
+                    xml = open(os.path.join(self.dir, file), 'r')  # open XML file
+                    break
+                except IOError:
+                    # sometimes external hard drive will blip off and on exactly as we try to load. Try again i guess?
+                    retry += 1
+
             origin_soup = bs(xml, 'xml')  # open XML file as soup
             date_tag_count = 0
             for date in origin_soup.find_all('date'):
