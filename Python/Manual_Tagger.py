@@ -77,8 +77,8 @@ class ManualTagger:
             topics = member.find_all('topic')
             for topic in topics:
                 speeches_text = topic.find_all('speech')
-                display.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
-                display.display_menu()
+                display.display_speeches(member, topic.get('title'), speeches_text)
+                member = display.display_menu()
 # end class ManualTagger
 
 
@@ -99,9 +99,15 @@ class Display:
                              "Q": self.quit}
         self.move_on = False
 
+        self.member_soup = bs()
+        self.topic_title = ""
+
     def display_speeches(self, member, topic, speeches):
         pass
-        print("Member: ", member)
+        self.member_soup = member
+        self.topic_title = topic
+        print("\nMember: ", member.get('membername'))
+
         print("Topic:  ", topic)
         i = 1
         for speech in speeches:
@@ -118,11 +124,55 @@ class Display:
                 self.options_dict[new_input]()
             except KeyError:
                 print("{} NOT VALID INPUT".format(new_input))
+        return self.member_soup
 
     def mark_sentiment(self):
         print("MARK SENTIMENT")
+        sentiment_opt = "1: Mark as Positive\n" \
+                        "2: Mark as Negative\n" \
+                        "3: Mark as Neutral\n" \
+                        "4: Mark as Unknown\n" \
+                        "Q: Return to Menu\n" \
+                        ":"
         self.move_on = True
-        pass
+
+        stance_tag = self.member_soup.find('stance')
+        if not stance_tag:
+            stance_tag = self.member_soup.new_tag('stance')
+            topic_tag = self.member_soup.find('topic', attrs={'title': self.topic_title})
+            topic_tag.append(stance_tag)
+
+        valid = False
+        while not valid:
+            new_input = input(sentiment_opt).upper()
+            if new_input == '1':
+                print("MARKING AS POSITIVE")
+                stance_tag.append("POS")
+                valid = True
+                pass
+            elif new_input == '2':
+                print("MARKING AS NEGATIVE")
+                stance_tag.append("NEG")
+                valid = True
+                pass
+            elif new_input == '3':
+                print("MARKING AS NEUTRAL")
+                stance_tag.append("NEU")
+                valid = True
+                pass
+            elif new_input == '4':
+                print("MARKING AS UNKNOWN")
+                stance_tag.append("UKN")
+                valid = True
+                pass
+            elif new_input == 'Q':
+                print("RETURNING TO MENU")
+                self.move_on = False
+                valid = True
+                pass
+            else:
+                print("INVALID INPUT. TRY AGAIN")
+        # end while loop
 
     def edit_member(self):
         print("EDIT MEMBER")

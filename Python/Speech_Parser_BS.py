@@ -23,14 +23,6 @@ class SpeechParser:
     def parse_speeches(self, word_soup):
         # finds all member speeches in the provided soup, returning them in a better organised xml soup
         # SPEECH SOUP LAYOUT
-        # speech
-        #     member
-        #     topic
-        #     stance
-        #     word
-        # /speech
-
-        # DESIRED LAYOUT
         # <member name="">
         #     <topic title="">
         #         <stance>POS</stance>
@@ -69,10 +61,12 @@ class SpeechParser:
                 # we've not seen this member mentioned before, create new tag
                 member_tag = new_soup.new_tag('member', membername=member.text)
                 topic_tag = new_soup.new_tag('topic', title=topic.text)
+                stance_tag = new_soup.new_tag('stance')
                 new_soup.append(member_tag)
                 member_tag.append(topic_tag)
+                topic_tag.append(stance_tag)
             else:
-                # we've seen this member before, but have they discussed this topic before.
+                # we've seen this member before, but have they discussed this topic before?
                 topic_tag = member_tag.find('topic', attrs={'title': topic.text})
                 if not topic_tag:
                     topic_tag = new_soup.new_tag('topic', title=topic.text)
