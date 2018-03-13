@@ -77,8 +77,30 @@ class ManualTagger:
             topics = member.find_all('topic')
             for topic in topics:
                 speeches_text = topic.find_all('speech')
-                display.display_speeches(member, topic.get('title'), speeches_text)
-                member = display.display_menu()
+                display.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
+
+                member_name, topic_title, sentiment = display.display_menu()
+
+                if not member_name == member.get('membername'):
+                    # member name has been edited
+                    member['membername'] = member_name
+
+                if not topic_title == topic.get('title'):
+                    # topic title has been edited
+                    topic['title'] = topic_title
+
+                stance_tag = topic.find('stance')
+                if not stance_tag:
+                    # for whatever reason the stance tag does not exist. we need to make it
+                    stance_tag = soup.new_tag('stance')
+                    topic.append(stance_tag)
+                stance_tag.append(sentiment)  # mark the sentiment in the XML
+        xml.close()
+        # this deletes the contents of the file in order to write so must be done just before writing to avoid data loss
+        xml = open(os.path.join(self.root_dir, file), 'wb')
+        print("WRITING CHANGES TO FILE")
+        xml.write(soup.prettify(encoding='utf-8'))
+        xml.close()
 # end class ManualTagger
 
 
@@ -99,14 +121,15 @@ class Display:
                              "Q": self.quit}
         self.move_on = False
 
-        self.member_soup = bs()
+        self.member_name = ""
         self.topic_title = ""
+        self.sentiment = ""
 
     def display_speeches(self, member, topic, speeches):
         pass
-        self.member_soup = member
+        self.member_name = member
         self.topic_title = topic
-        print("\nMember: ", member.get('membername'))
+        print("\nMember: ", member)
 
         print("Topic:  ", topic)
         i = 1
@@ -124,7 +147,7 @@ class Display:
                 self.options_dict[new_input]()
             except KeyError:
                 print("{} NOT VALID INPUT".format(new_input))
-        return self.member_soup
+        return self.member_name, self.topic_title, self.sentiment
 
     def mark_sentiment(self):
         print("MARK SENTIMENT")
@@ -136,33 +159,27 @@ class Display:
                         ":"
         self.move_on = True
 
-        stance_tag = self.member_soup.find('stance')
-        if not stance_tag:
-            stance_tag = self.member_soup.new_tag('stance')
-            topic_tag = self.member_soup.find('topic', attrs={'title': self.topic_title})
-            topic_tag.append(stance_tag)
-
         valid = False
         while not valid:
             new_input = input(sentiment_opt).upper()
             if new_input == '1':
                 print("MARKING AS POSITIVE")
-                stance_tag.append("POS")
+                self.sentiment = "POS"
                 valid = True
                 pass
             elif new_input == '2':
                 print("MARKING AS NEGATIVE")
-                stance_tag.append("NEG")
+                self.sentiment = "NEG"
                 valid = True
                 pass
             elif new_input == '3':
                 print("MARKING AS NEUTRAL")
-                stance_tag.append("NEU")
+                self.sentiment = "NEU"
                 valid = True
                 pass
             elif new_input == '4':
                 print("MARKING AS UNKNOWN")
-                stance_tag.append("UKN")
+                self.sentiment = "UKN"
                 valid = True
                 pass
             elif new_input == 'Q':
@@ -176,9 +193,15 @@ class Display:
 
     def edit_member(self):
         print("EDIT MEMBER")
+        print("Current Member Name: ", self.member_name)
+        new_name = input("Input New Name:")
+        self.member_name = new_name
 
     def edit_subject(self):
         print("EDIT SUBJECT")
+        print("Current Subject Title: ", self.topic_title)
+        new_topic = input("Input new Subject:")
+        self.topic_title = new_topic
 
     def quit(self):
         quit_input = input("Are You Sure you want to quit? \nAll Changes to this file will be lost. \nY/N: ").upper()
