@@ -1,40 +1,41 @@
-import nltk
-from nltk.corpus import stopwords
-stop = stopwords.words('english')
+import NLP
+import os
+from bs4 import BeautifulSoup as bs
 
-string = """
-The Parliamentary Secretary to the Ministry of Agriculture, Fisheries and Food (Mr. Jerry Wiggin)
-        """
+name = "Mr. Geoffrey Robinson (Coventry, North-West)"
+other_name = "Mr. Geoffrey Robinson"
+paragraph = """
+ As the right hon. Gentleman knows, consumer protection is a matter for my right hon. Friend the Secretary of State for 
+ Trade and Industry. The right hon. Gentleman will have noticed that the Bank of England recently issued a letter to all
+ lending institutions urging them to observe prudent lending measures in their lending. My hon. Friend the Minister for 
+ Housing, Urban Affairs and Construction has echoed that point to the building societies in respect of lending for 
+ housing. It is important that these institutions observe prudent lending policies. I believe that, coupled with 
+ prudence by those who borrow, that is the best way to deal with the matter.
+    """
+print("NAME FROM NLP: ", NLP.extract_name(name))
+print("OTHER NAME   : ", NLP.extract_name(other_name))
 
-# STOLEN FULLY FROM
-# https://github.com/acrosson/nlp/blob/master/information-extraction.py
+sentences = NLP.sentence_split(paragraph)
+i = 1
+for sent in sentences:
+    print(i, ": ", sent)
+    i += 1
 
+# name_one = input("Enter Name One:")
+# name_two = input("Enter Name Two:")
+# print(name_one, " and ", name_two , " same person?: ", NLP.name_match(name_one, name_two))
 
-def ie_preprocess(document):
-    print("ORIGINAL SENTENCE:\n", document)
-    document = ' '.join([i for i in document.split()])  # if i not in stop])
-    print("sentence has been split: \n", document)
-    sentences = nltk.sent_tokenize(document)
-    print("sentence tokenized: \n", sentences)
-    sentences = [nltk.word_tokenize(sent) for sent in sentences]
-    print("sentence word tokenized:\n", sentences)
-    sentences = [nltk.pos_tag(sent) for sent in sentences]
-    print("sentence pos_tagged:\n", sentences)
-    return sentences
+input("Waiting for input to start name list...")
 
+root_dir = "E:\Documents\-Uni Documents\Year 3\Final Project\Data\Parsed Speech\Test Set"
+file = "1981-10-28.xml"
 
-def extract_names(document):
-    names = []
-    sentences = ie_preprocess(document)
-    for tagged_sentence in sentences:
-        for chunk in nltk.ne_chunk(tagged_sentence):
-            print("Sentence NE_chunked:\n", chunk)
-            if type(chunk) == nltk.tree.Tree:
-                if chunk.label() == 'PERSON':
-                    names.append(' '.join([c[0] for c in chunk]))
-    return names
+xml = open(os.path.join(root_dir, file))
+soup = bs(xml, 'xml')
 
-
-names = extract_names(string)
-for name in names:
-    print(name)
+members = soup.find_all('member')
+for member in members:
+    name = member.get('membername')
+    print("Original Name: {}".format(name))
+    print("Found Name:    {}".format(NLP.extract_name(name)))
+    print(" ")
