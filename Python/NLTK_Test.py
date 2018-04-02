@@ -27,15 +27,26 @@ for sent in sentences:
 
 input("Waiting for input to start name list...")
 
-root_dir = "E:\Documents\-Uni Documents\Year 3\Final Project\Data\Parsed Speech\Test Set"
-file = "1981-10-28.xml"
+root_dir = "E:\Documents\-Uni Documents\Year 3\Final Project\Data\Parsed Speech\Test_Set"
+file = "Name_match_test.xml"
 
 xml = open(os.path.join(root_dir, file))
 soup = bs(xml, 'xml')
 
 members = soup.find_all('member')
+member_names = []
 for member in members:
-    name = member.get('membername')
-    print("Original Name: {}".format(name))
-    print("Found Name:    {}".format(NLP.extract_name(name)))
+    original_name = member.get('membername')
+    name = NLP.extract_name(original_name)
+    print("Original Name: {}".format(original_name))
+    print("Found Name:    {}".format(name))
+    previous_seen = False
+    for mem_name in member_names:
+        if NLP.name_match(name, mem_name):
+            print("NAME MATCH: {} IS {}".format(name, mem_name))
+            previous_seen = True
+            break
+    if not previous_seen:
+        member_names.append(name)
     print(" ")
+

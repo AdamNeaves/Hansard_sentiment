@@ -1,8 +1,11 @@
 
 from bs4 import BeautifulSoup as bs
 import os
+import gc
 import sys
 import time
+import warnings
+import NLP
 
 
 class SpeechParser:
@@ -10,10 +13,10 @@ class SpeechParser:
     def __init__(self, root_dir):
         self.dir = root_dir
         parsed_dir = os.path.dirname(self.dir)
-        base_name  = os.path.basename(self.dir)
+        base_name = os.path.basename(self.dir)
         parsed_dir = os.path.join(os.path.dirname(parsed_dir), "Parsed Speech", base_name)
         print("PARSED DIRECTORY: ", parsed_dir)
-        self.dest =  parsed_dir  # open(os.path.join(parsed_dir, '{}_parsed.xml'.format(base_name)), 'wb')
+        self.dest = parsed_dir  # open(os.path.join(parsed_dir, '{}_parsed.xml'.format(base_name)), 'wb')
 
         if not(os.path.exists(parsed_dir)):
             os.makedirs(parsed_dir, exist_ok=True)
@@ -42,7 +45,7 @@ class SpeechParser:
 
             if not member or not topic:
                 continue
-            if not topic.text:
+            if not topic.text or not member.text:
                 continue  # no member or topic means we don't want to use this speech
 
             for unwanted_tag in contribution.find_all(['image', 'col']):  # remove unwanted tags
@@ -54,10 +57,21 @@ class SpeechParser:
             for unwanted_tag in topic.find_all(['image', 'col']):  # remove unwanted tags
                 unwanted_tag.decompose()
 
-            # have we seen this member before? NEED WAY TO CHECK FOR OTHER NAME FORMS
-            member_tag = new_soup.find('member', {'membername': member.text})
+            # have we seen this member before?
+            name = NLP.extract_name(member.text)
+
+            member_tag = None
+            for rev_member in reversed(new_soup.find_all('member')):
+                # if we've already seen then it's likely to be more recent, so we search the list backwards
+                member_name = NLP.extract_name(rev_member.get('membername'))
+                if NLP.name_match(name, member_name):
+                    # we've matched names! huzzah! get that member tag
+                    # print("Found matching name! {} is the same as {}".format(name, member_name))
+                    member_tag = rev_member
+                    break
+
             if not member_tag:
-                # we may still have seen them before, but using a different form of their name
+                # print("Creating tag for {}".format(name))
                 # we've not seen this member mentioned before, create new tag
                 member_tag = new_soup.new_tag('member', membername=member.text)
                 topic_tag = new_soup.new_tag('topic', title=topic.text)
@@ -109,6 +123,7 @@ class SpeechParser:
         #       SAVE SOUP TO FILE (OVERWRITE)
 
         for file in self.files:
+            gc.collect()  # tells the garbage collector to clear unused variables, etc to clear up some memory
             start_time = time.time()
             print("START NEW FILE: ", file)
             retry = 0
@@ -119,8 +134,11 @@ class SpeechParser:
                 except IOError:
                     # sometimes external hard drive will blip off and on exactly as we try to load. Try again i guess?
                     retry += 1
-
-            origin_soup = bs(xml, 'xml')  # open XML file as soup
+            try:
+                origin_soup = bs(xml, 'xml')  # open XML file as soup
+            except MemoryError:
+                warnings.warn("Memory Error Encountered. Skipping file {}".format(file))
+                continue
             date_tag_count = 0
             for date in origin_soup.find_all('date'):
 
