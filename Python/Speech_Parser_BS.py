@@ -93,7 +93,7 @@ class SpeechParser:
             topic_tag.append(speech_tag)
             speech_soup = topic_tag.contents[-1]
 
-            speech_text = contribution.text.replace('\n', '')
+            speech_text = contribution.text.replace('\n', ' ')
             speech_soup.append(speech_text)
             speech_count += 1
             # print("SPEECH:\n", speech_soup.prettify())

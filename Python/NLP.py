@@ -12,8 +12,12 @@ def sentence_split(text):
     # because NLTK's sentence tokenizer recognises hon. as the end of a sentence, unlike mr. or mrs., we need to
     # replace that with something it can handle
     regex_hon = re.compile(r'\bhon\.', re.IGNORECASE)
+    regex_percent = re.compile(r'\bper cent\.', re.IGNORECASE)  # also NLTK see "cent." as end of sentence so fix that
+    regex_sentence_end = re.compile(r'[a-z]\.[A-Z]')  # some sentences have no space separating. Fix that also
     text = re.sub(regex_hon, "honorable", text)
-    text = text.replace('\n', '')
+    text = re.sub(regex_percent, "percent", text)
+    text = re.sub(regex_sentence_end, ". ", text)  # this will miss those times when a sentence ends with a caps letter
+    text = text.replace('\n', ' ')
     return sent_tokenize(text)
 
 
