@@ -185,8 +185,8 @@ class Display:
     def display_menu(self):
         self.move_on = False
         while not self.move_on:
+            new_input = input(self.options_menu).upper()
             try:
-                new_input = input(self.options_menu).upper()
                 self.options_dict[new_input]()
             except KeyError:
                 print("{} NOT VALID INPUT".format(new_input))
@@ -253,16 +253,17 @@ class Display:
 # end class Display
 
 
-print("Running: ", sys.argv[0])
-if len(sys.argv) == 1:
-    print("No root directory provided. Please Provide directory as argument")
-else:
-    if os.path.isdir(sys.argv[1]):
-        print("Root Directory: ", sys.argv[1])
-        tagger = ManualTagger(sys.argv[1])
-        # display = Display()
-        file = tagger.select_file()
-        print("FILE SELECTED: ", file)
-        tagger.read_file(file)
+if __name__ == "__main__":
+    print("Running: ", sys.argv[0])
+    if len(sys.argv) == 1:
+        print("No root directory provided. Please Provide directory as argument")
     else:
-        print("FIRST ARGUMENT MUST BE DIRECTORY")
+        if os.path.isdir(sys.argv[1]):
+            print("Root Directory: ", sys.argv[1])
+            tagger = ManualTagger(sys.argv[1])
+            # display = Display()
+            file = tagger.select_file()
+            print("FILE SELECTED: ", file)
+            tagger.read_file(file)
+        else:
+            print("FIRST ARGUMENT MUST BE DIRECTORY")

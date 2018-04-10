@@ -171,16 +171,17 @@ class SpeechParser:
 # end of class SpeechParser
 
 
-print("Running: ", sys.argv[0])
-if len(sys.argv) == 1:
-    print("No root directory provided. Please Provide directory as argument")
-else:
-    begin_time = time.time()
-    if os.path.isdir(sys.argv[1]):
-        print("Root Directory: ", sys.argv[1])
-        parser = SpeechParser(sys.argv[1])
-        parser.find_files()
-        parser.parse_files()
-        print("PARSE FINISHED. TOOK {} SECONDS".format(time.time() - begin_time))
+if __name__ == "__main__":
+    print("Running: {} as main".format(sys.argv[0]))
+    if len(sys.argv) == 1:
+        print("No root directory provided. Please Provide directory as argument")
     else:
-        print("FIRST ARGUMENT MUST BE DIRECTORY")
+        begin_time = time.time()
+        if os.path.isdir(sys.argv[1]):
+            print("Root Directory: ", sys.argv[1])
+            parser = SpeechParser(sys.argv[1])
+            parser.find_files()
+            parser.parse_files()
+            print("PARSE FINISHED. TOOK {} SECONDS".format(time.time() - begin_time))
+        else:
+            print("FIRST ARGUMENT MUST BE DIRECTORY")

@@ -1,11 +1,18 @@
 import re
-import nltk
+import csv
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.classify import NaiveBayesClassifier
-# from nltk.sentiment.util import *
+from nltk.sentiment import SentimentAnalyzer
+import pickle
+from nltk.sentiment.util import *
 import string
+import random
+
+print("USING NLTK VERSION {}".format(nltk.__version__))
+
+all_words = []
 
 
 def sentence_split(text):
@@ -24,8 +31,6 @@ def sentence_split(text):
 def extract_name(text):
     # find a name in a sentence or piece of text
     # will assume the first name given that includes an honorific (mr., Mrs, etc) is the correct name
-    # words = word_tokenize(text)  # splits the sentence into a list of words
-    # words = nltk.pos_tag(words)  # tags the words with their categorization such as nouns, verbs, etc
     punctuation = string.punctuation  # we want to get all the text from Mr/Mrs etc till it finds some punctuation
     punctuation = punctuation.replace("-", "")  # however, - and . are valid parts of a name, so we still want them
     punctuation = punctuation.replace(".", "")
@@ -67,7 +72,7 @@ def name_match(name_one, name_two):
             hon_one = name_one_words[0]
             surname_one = name_one_words[-1]
             forname_one = None
-        except IndexError as e:
+        except IndexError:
             print("ERROR: Index out of bounds. Is the name blank?")
             print("Name causing error: {}".format(name_one))
             raise
@@ -100,3 +105,81 @@ def name_match(name_one, name_two):
     same_hom = hon_one == hon_two
     return same_surname and same_forname and same_hom
 
+
+def create_sentiment_model(pos_sentences, neg_sentences, model_save=None, train_percent=0.9):
+    features = create_feature_set(pos_sentences, neg_sentences)  # get the list of features
+    #  shuffles the feature set for us before returning so it can be used
+    print("Splitting feature set into testing/training sets")
+    num_in_train_set = int(len(features)*train_percent)
+    training_set = features[:num_in_train_set]  # training set will be first x percent of feature list
+    testing_set  = features[num_in_train_set:]  # testing set will be everything that remains#
+    print("Number of training sentences: {}".format(len(training_set)))
+    print("Number of testing sentences:  {}".format(len(testing_set)))
+    print("TRAINING CLASSIFIER: PLEASE BE PATIENT")
+    classifier = NaiveBayesClassifier.train(training_set)
+    print("Classifier accuracy: {}%".format(nltk.classify.accuracy(classifier, testing_set)*100))
+    print("Classifier 10 Most informative Features:")
+    classifier.show_most_informative_features(10)
+    if model_save:
+        print("Saving model to {}".format(model_save))
+        save_classifer = open(model_save, "wb")
+        pickle.dump(classifier, save_classifer)
+        save_classifer.close()
+    else:
+        print("No save location for the model: it will be lost after program closes!")
+    return classifier
+
+
+def create_feature_set(pos_doc, neg_doc):
+    print("Converting annotated data to feature lists")
+    global all_words
+    # our features will be a list of words, with true or false, saying if that word is in the sentence
+
+    # get every word used in both positive and negative sentences
+    with open(pos_doc, 'r', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            row_words = word_tokenize(row['Sentence'])
+            all_words = all_words + row_words
+
+    with open(neg_doc, 'r', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            row_words = word_tokenize(row['Sentence'])
+            all_words = all_words + row_words
+
+    # order words by frequency
+    all_words = nltk.FreqDist(all_words)
+
+    all_words = list(all_words.most_common())[:3000]  # get the 3000 most frequent words (in theory?)
+    # print(all_words)
+
+    feature_sets = []
+
+    with open(pos_doc, 'r', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            sentence = row['Sentence']
+            feature_sets.append((convert_sentence_to_features(sentence), row['Sentiment']))
+
+    with open(neg_doc, 'r', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            sentence = row['Sentence']
+            feature_sets.append((convert_sentence_to_features(sentence), row['Sentiment']))
+
+    print("{} sentences turned to feature lists".format(len(feature_sets)))
+    # print(feature_sets)
+    random.shuffle(feature_sets)
+    return feature_sets
+
+
+def convert_sentence_to_features(sentence):
+    global all_words
+    words = set(word_tokenize(sentence))
+    features = {}
+
+    for w in all_words:  # for each word in the list of 3000 most common words
+        features[w[0]] = (w[0] in words)  # add word to features, with True if the word is in the sentence, else false
+
+    return features  # so this ends up as a dict, with the words as keys, and True or False as values
