@@ -1,9 +1,14 @@
 \chapter{Background \& Objectives}
 
 \section{Background}
-In order to prepare for this project, my first task was to download the actual Hansard Dataset to see what I was going to be working with, and to research the purpose and contents of the Hansard archive. Additionally, I began researching Natural Language Processing, seeing what programming languages were commonly used for this purpose and what the standard techniques usually are. In my research, I saw that the most commonly used languages were either Python, or Java. Considering the size of the dataset used and considering speed, I chose to develop this system in Python.
+To prepare for the project, there were two major areas needing research; Natural Language Processing, and the Hansard Dataset.
 
-Once the language was chosen, I could look into the sort of packages commonly used in Natural Language Processing, and research sentiment analysis more thoroughly. 
+Research began on the Hansard Dataset, where the first task was to download the actual dataset, a 10Gb verbatum record of everything said in parliament between 1803 and 2004, but “...with repetitions and redundancies omitted and with obvious mistakes corrected…" (https://www.commonwealth-hansard.org/about-hansard.html)
+This is sourced from hard copies, and as such there are some minor errors from when it was scanned, assumably by some form of OCR. However, these errors are minor, and uncommon enough that they prove no issue for the project as a whole.
+
+One aspect of the Hansard dataset that needed to be planned for when designing the project was it’s lack of proper XML formatting. Though the data is presented in an Xml format, there were also HTML style tags within the bodies of text. In addition, each of the six series of data appeared to have slightly different formatting, and so anything used to read the data would have to be able to handle these differences.
+
+In researching Natural language Processing, the Natural language Toolkit was discovered. This python module is a commonly used for Natural langage Processing, and provides methods and classes for many things, such as Named Entity Regongition, sentence splitting, and even some basic machine learning tactics for things like text classification, which could be used for the project. 
 
 \section{Analysis}
 Taking into account the problem and what you learned from the background work, what was your analysis of the problem? How did your analysis help to decompose the problem into the main tasks that you would undertake? Were there alternative approaches? Why did you choose one approach compared to the alternatives? 
