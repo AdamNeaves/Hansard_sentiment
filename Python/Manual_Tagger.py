@@ -38,7 +38,10 @@ class ManualTagger:
                     self.files.append(file)
         self.file_count = 0
 
-        data_dir = os.path.dirname(os.path.dirname(root_dir))
+        data_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.dirname(data_dir)
+        data_dir = os.path.join(data_dir, "Data")
+        # print("DATA DIRECTORY: {}".format(data_dir))
         self.annotated_dir = os.path.join(data_dir, "Annotated Speech")
         if not os.path.exists(self.annotated_dir):
             print("MAKING ANNOTATED SPEECH DIR")
@@ -75,7 +78,7 @@ class ManualTagger:
                 xml.close()
 
     def read_file(self, file):
-        display = Display(self.pos_file, self.neg_file)
+        # display = Display(self.pos_file, self.neg_file)
         xml = open(os.path.join(self.root_dir, file), encoding="utf-8")
         soup = bs(xml, 'xml')
         # FILE LAYOUT
@@ -98,70 +101,20 @@ class ManualTagger:
             for topic in topics:
                 speeches_text = topic.find_all('speech')
 
-                display.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
-
-                # member_name, topic_title, sentiment = display.display_menu()
-                #
-                # if not member_name == member.get('membername'):
-                #     # member name has been edited
-                #     member['membername'] = member_name
-                #
-                # if not topic_title == topic.get('title'):
-                #     # topic title has been edited
-                #     topic['title'] = topic_title
-                #
-                # stance_tag = topic.find('stance')
-                # if not stance_tag:
-                #     # for whatever reason the stance tag does not exist. we need to make it
-                #     stance_tag = soup.new_tag('stance')
-                #     topic.append(stance_tag)
-                # stance_tag.append(sentiment)  # mark the sentiment in the XML
+                self.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
         xml.close()
         # this deletes the contents of the file in order to write so must be done just before writing to avoid data loss
         xml = open(os.path.join(self.root_dir, file), 'wb')
         print("WRITING CHANGES TO FILE")
         xml.write(soup.prettify(encoding='utf-8'))
         xml.close()
-# end class ManualTagger
-
-
-class Display:
-    options_menu = "1: Mark Sentiment\n" \
-                   "2: Edit Member\n" \
-                   "3: Edit Subject\n" \
-                   "Q: Quit\n" \
-                   ":"
-    options_dict = dict()
-
-    def __init__(self, pos_file, neg_file, window_width=70):
-        print("INITIALIZING DISPLAY")
-        self.width = window_width
-        self.options_dict = {"1": self.mark_sentiment,
-                             "2": self.edit_member,
-                             "3": self.edit_subject,
-                             "Q": self.quit}
-        self.move_on = False
-
-        self.member_name = ""
-        self.topic_title = ""
-        self.sentiment = ""
-
-        self.pos_file = pos_file
-        self.neg_file = neg_file
 
     def display_speeches(self, member, topic, speeches):
-        self.member_name = member
-        self.topic_title = topic
         sentences = []
-        # open_pos_file = open(self.pos_file, 'a', encoding="utf-8")
-        # open_neg_file = open(self.neg_file, 'a', encoding="utf-8")
-        # pos_writer = csv.writer(open_pos_file)
-        # neg_writer = csv.writer(open_neg_file)
-
         print("\nMember: ", member)
         print("Topic:  ", topic)
         for speech in speeches:
-            sentences.extend(NLP.sentence_split(speech.text))
+            sentences.extend(NLP.sentence_split(speech.text))  # get a list of all sentences from this speech
         for sentence in sentences:
             sentiment = ''
             while sentiment.upper() not in ["P", "N", "U"]:
@@ -179,78 +132,7 @@ class Display:
                     # neg_writer.writerow([sentence, "NEG", member, topic])
                 elif sentiment.upper() == "U":
                     pass
-        # open_pos_file.close()
-        # open_neg_file.close()
-
-    def display_menu(self):
-        self.move_on = False
-        while not self.move_on:
-            new_input = input(self.options_menu).upper()
-            try:
-                self.options_dict[new_input]()
-            except KeyError:
-                print("{} NOT VALID INPUT".format(new_input))
-        return self.member_name, self.topic_title, self.sentiment
-
-    def mark_sentiment(self):
-        print("MARK SENTIMENT")
-        sentiment_opt = "1: Mark as Positive\n" \
-                        "2: Mark as Negative\n" \
-                        "3: Mark as Neutral\n" \
-                        "4: Mark as Unknown\n" \
-                        "Q: Return to Menu\n" \
-                        ":"
-        self.move_on = True
-
-        valid = False
-        while not valid:
-            new_input = input(sentiment_opt).upper()
-            if new_input == '1':
-                print("MARKING AS POSITIVE")
-                self.sentiment = "POS"
-                valid = True
-                pass
-            elif new_input == '2':
-                print("MARKING AS NEGATIVE")
-                self.sentiment = "NEG"
-                valid = True
-                pass
-            elif new_input == '3':
-                print("MARKING AS NEUTRAL")
-                self.sentiment = "NEU"
-                valid = True
-                pass
-            elif new_input == '4':
-                print("MARKING AS UNKNOWN")
-                self.sentiment = "UKN"
-                valid = True
-                pass
-            elif new_input == 'Q':
-                print("RETURNING TO MENU")
-                self.move_on = False
-                valid = True
-                pass
-            else:
-                print("INVALID INPUT. TRY AGAIN")
-        # end while loop
-
-    def edit_member(self):
-        print("EDIT MEMBER")
-        print("Current Member Name: ", self.member_name)
-        new_name = input("Input New Name:")
-        self.member_name = new_name
-
-    def edit_subject(self):
-        print("EDIT SUBJECT")
-        print("Current Subject Title: ", self.topic_title)
-        new_topic = input("Input new Subject:")
-        self.topic_title = new_topic
-
-    def quit(self):
-        quit_input = input("Are You Sure you want to quit? \nAll Changes to this file will be lost. \nY/N: ").upper()
-        if quit_input == 'Y':
-            quit()
-# end class Display
+# end class ManualTagger
 
 
 if __name__ == "__main__":
