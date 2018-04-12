@@ -3,6 +3,7 @@ import pickle
 import os
 import sys
 
+
 class HansardSentimentAnalyser:
 
     def __init__(self, model_save, annotated_dir, retrain=False):
@@ -24,13 +25,16 @@ class HansardSentimentAnalyser:
 
     def analyse(self, sentence):
         sentence_features = NLP.convert_sentence_to_features(sentence)
-        print(self.classifier.classify(sentence_features))
-        print(self.classifier.prob_classify(sentence_features).samples())
+        classified = self.classifier.prob_classify(sentence_features)
+        prob = round(classified.prob(classified.max()), 2)
+        print("Sentence is {} at a probability of {}".format(classified.max(), prob))
+        return classified
 
 
 if __name__ == "__main__":
     # run if main file
-
+    annotated_directory = ''
+    model_location = ''
     try:
         if os.path.isdir(sys.argv[1]):
             annotated_directory = sys.argv[1]
@@ -45,11 +49,10 @@ if __name__ == "__main__":
             print("Arg 2: {}".format(sys.argv[2]))
             exit()
 
+        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, False)
     except IndexError:
         print("Not enough arguments to create the sentiment analysis! Try again")
         raise
-
-    sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, True)
 
     while True:
         input_sentence = input("Please input a sentence to analyse:")
