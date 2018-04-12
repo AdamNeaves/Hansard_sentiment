@@ -1,12 +1,10 @@
-Python/.idea/*
-Data/
-
 # ignore everything in Documentation
 Documentation/*
 Documentation/Dissertation/*
 Documentation/Dissertation/Appendixes/*
 Documentation/Dissertation/Chapters/*
 Documentation/Dissertation/References/*
+Documentation/Poster/*
 
 # except these types of files
 !*.tex
@@ -16,3 +14,7 @@ Documentation/Dissertation/References/*
 
 # even if they are in subdirectories
 !*/
+
+/Python/.idea/
+/Python/venv/
+/Python/__pycache__/
