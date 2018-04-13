@@ -26,8 +26,8 @@ class HansardSentimentAnalyser:
     def analyse(self, sentence):
         sentence_features = NLP.convert_sentence_to_features(sentence)
         classified = self.classifier.prob_classify(sentence_features)
-        prob = round(classified.prob(classified.max()), 2)
-        print("Sentence is {} at a probability of {}".format(classified.max(), prob))
+        # prob = round(classified.prob(classified.max()), 2)
+        # print("Sentence is {} at a probability of {}".format(classified.max(), prob))
         return classified
 
 
@@ -49,14 +49,16 @@ if __name__ == "__main__":
             print("Arg 2: {}".format(sys.argv[2]))
             exit()
 
-        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, False)
+        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, True)
     except IndexError:
         print("Not enough arguments to create the sentiment analysis! Try again")
         raise
 
     while True:
         input_sentence = input("Please input a sentence to analyse:")
-        sentiment_analyser.analyse(input_sentence)
+        sentence_class = sentiment_analyser.analyse(input_sentence)
+        prob = round(sentence_class.prob(sentence_class.max()), 2)
+        print("Sentence is {} at a probability of {}".format(sentence_class.max(), prob))
 
 
 

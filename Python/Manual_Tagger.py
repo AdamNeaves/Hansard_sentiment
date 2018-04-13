@@ -101,15 +101,15 @@ class ManualTagger:
             for topic in topics:
                 speeches_text = topic.find_all('speech')
 
-                self.display_speeches(member.get('membername'), topic.get('title'), speeches_text)
+                self.annotate_speech_sentiment(member.get('membername'), topic.get('title'), speeches_text)
         xml.close()
         # this deletes the contents of the file in order to write so must be done just before writing to avoid data loss
-        xml = open(os.path.join(self.root_dir, file), 'wb')
-        print("WRITING CHANGES TO FILE")
-        xml.write(soup.prettify(encoding='utf-8'))
-        xml.close()
+        # xml = open(os.path.join(self.root_dir, file), 'wb')
+        # print("WRITING CHANGES TO FILE")
+        # xml.write(soup.prettify(encoding='utf-8'))
+        # xml.close()
 
-    def display_speeches(self, member, topic, speeches):
+    def annotate_speech_sentiment(self, member, topic, speeches):
         sentences = []
         print("\nMember: ", member)
         print("Topic:  ", topic)

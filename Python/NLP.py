@@ -20,10 +20,10 @@ def sentence_split(text):
     # replace that with something it can handle
     regex_hon = re.compile(r'\bhon\.', re.IGNORECASE)
     regex_percent = re.compile(r'\bper cent\.', re.IGNORECASE)  # also NLTK see "cent." as end of sentence so fix that
-    regex_sentence_end = re.compile(r'[a-z]\.[A-Z]')  # some sentences have no space separating. Fix that also
+    regex_sentence_end = re.compile(r'([a-z])\.([A-Z])')  # some sentences have no space separating. Fix that also
     text = re.sub(regex_hon, "honorable", text)
     text = re.sub(regex_percent, "percent", text)
-    text = re.sub(regex_sentence_end, ". ", text)  # this will miss those times when a sentence ends with a caps letter
+    text = re.sub(regex_sentence_end, r'\1. \2', text)  # this will miss those times when a sentence ends with a caps letter
     text = text.replace('\n', ' ')
     return sent_tokenize(text)
 
@@ -122,9 +122,9 @@ def create_sentiment_model(pos_sentences, neg_sentences, model_save=None, train_
     classifier.show_most_informative_features(10)
     if model_save:
         print("Saving model to {}".format(model_save))
-        save_classifer = open(model_save, "wb")
-        pickle.dump(classifier, save_classifer)
-        save_classifer.close()
+        save_classifier = open(model_save, "wb")
+        pickle.dump(classifier, save_classifier)
+        save_classifier.close()
     else:
         print("No save location for the model: it will be lost after program closes!")
     return classifier
@@ -177,9 +177,15 @@ def create_feature_set(pos_doc, neg_doc):
 def convert_sentence_to_features(sentence):
     global all_words
     words = set(word_tokenize(sentence))
+    filtered_words = []
+    for word in words:
+        if word not in stopwords.words('english'):
+            # do we care if the word is a stop word? maybe
+            filtered_words.append(word)
     features = {}
 
     for w in all_words:  # for each word in the list of 3000 most common words
-        features[w[0]] = (w[0] in words)  # add word to features, with True if the word is in the sentence, else false
+        features[w[0]] = (w[0] in filtered_words)  # add word to features, with True if the word is in the sentence, else false
 
     return features  # so this ends up as a dict, with the words as keys, and True or False as values
+# its possible that just "true" and "false" isn't good enough, and could be improved? perhaps a count?
