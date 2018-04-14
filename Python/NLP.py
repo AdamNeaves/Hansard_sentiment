@@ -34,8 +34,8 @@ def extract_name(text):
     punctuation = string.punctuation  # we want to get all the text from Mr/Mrs etc till it finds some punctuation
     punctuation = punctuation.replace("-", "")  # however, - and . are valid parts of a name, so we still want them
     punctuation = punctuation.replace(".", "")
-    name_rex = re.compile(r'(\bMr\.|\bMrs\.|\bSir|\bDr\.)[^()\n][^{}]+'.format(punctuation), re.IGNORECASE)  # regex to find all honorifics. hopefully
-    # tried using NLTKs NE_CHUNK to find the name but that didnt work as consistently as the regex option
+    name_rex = re.compile(r'(\bMr[ .]|\bMrs[ .]|\bSir[ .]|\bDr[ .])[^{}\\\n]+'.format(punctuation), re.IGNORECASE)  # regex to find all honorifics. hopefully
+    # tried using NLTKs NE_CHUNK to find the name but that didn't work as consistently as the regex option
     match = re.search(name_rex, text)
     if match:
         return match.group(0).strip()  # return the whole matched text
@@ -91,18 +91,19 @@ def name_match(name_one, name_two):
             hon_two = name_two_words[0]
             surname_two = name_two_words[-1]
             forname_two = None
-        except IndexError as e:
+        except IndexError:
             print("ERROR: Index out of bounds.")
             print("Name causing error: {}".format(name_two))
             raise
 
     if forname_one and forname_two:
+        # TODO: Should recognise that A. Neaves and Adam Neaves are the same, so match A. to Adam
         same_forname = forname_one == forname_two
     else:
         same_forname = True
 
     same_surname = surname_one == surname_two
-    same_hom = hon_one == hon_two
+    same_hom = hon_one == hon_two  # TODO: honorifics may or may not have a period (Mr. or Mr), check for this
     return same_surname and same_forname and same_hom
 
 
