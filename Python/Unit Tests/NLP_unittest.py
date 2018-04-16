@@ -156,10 +156,10 @@ class NLPSentenceFeatureSetConverterTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_convert_sentence_feature(self):
-        test_sentence = "This is a test of the sentence to feature converter"
-        expected_result = ["This", "is", "a", "test", "of", "the", "sentence", "to", "feature", "converter"]
-        self.assertEqual(NLP.convert_sentence_to_features(test_sentence), expected_result)
+    # def test_convert_sentence_feature(self):
+    #     test_sentence = "This is a test of the sentence to feature converter"
+    #     expected_result = ["This", "is", "a", "test", "of", "the", "sentence", "to", "feature", "converter"]
+    #     self.assertEqual(NLP.convert_sentence_to_features(test_sentence), expected_result)
 
 
 if __name__ == '__main__':

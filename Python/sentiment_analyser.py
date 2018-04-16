@@ -30,6 +30,17 @@ class HansardSentimentAnalyser:
         # print("Sentence is {} at a probability of {}".format(classified.max(), prob))
         return classified
 
+    def analyse_paragraph(self, paragraph):
+        """Gets the sentiment for each sentence in the paragraph, returns average"""
+        sentences = NLP.sentence_split(paragraph)
+        sentiments = []
+        for sentence in sentences:
+            sentiments.append(self.analyse(sentence).max())
+        num_pos = sentiments.count("POS")
+        num_neg = sentiments.count("NEG") * -1
+
+        return (num_neg + num_pos)/len(sentiments)  # return the average sentiment, between -1 (neg) and 1 (pos)
+
 
 if __name__ == "__main__":
     # run if main file
@@ -54,11 +65,22 @@ if __name__ == "__main__":
         print("Not enough arguments to create the sentiment analysis! Try again")
         raise
 
+    print("Testing paragraph thing")
+    paragraph = ("So far, I have received representations from about 30 organisations and individuals. " 
+                 "However, consultations are due to last until 30 June. In view of the importance and complexity of "
+                 "the issues raised in the Green Paper, I do not expect to receive comments from the "
+                 "major organisations in industry until later in the consultative period.")
+
+    print("Paragraph :\n {}".format(paragraph))
+    print("Sentiment Value: {}".format(sentiment_analyser.analyse_paragraph(paragraph)))
+
     while True:
         input_sentence = input("Please input a sentence to analyse:")
         sentence_class = sentiment_analyser.analyse(input_sentence)
         prob = round(sentence_class.prob(sentence_class.max()), 2)
         print("Sentence is {} at a probability of {}".format(sentence_class.max(), prob))
+
+
 
 
 

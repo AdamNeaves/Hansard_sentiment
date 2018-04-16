@@ -190,3 +190,4 @@ def convert_sentence_to_features(sentence):
 
     return features  # so this ends up as a dict, with the words as keys, and True or False as values
 # its possible that just "true" and "false" isn't good enough, and could be improved? perhaps a count?
+
