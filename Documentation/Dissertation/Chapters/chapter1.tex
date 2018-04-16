@@ -1,6 +1,17 @@
 \chapter{Background \& Objectives}
 
 \section{Background}
+
+\subsection{Hansard Dataset}
+
+The Hansard Dataset is a set of documents produced by the British Parliament, which began in the 18th and 19th century. These documents contain reports and details of debates in the House of Commons, going back to the year 1803. Eventually, in 1907, these reports were made official and started being produced by Parliament itself, becoming “The Official Report”, though still unofficially known as Hansard. Along with becoming official, a report was officially defined as being one:
+\begin{quote} “which, though not strictly verbatim, is substantially the verbatim report, with repetitions and redundancies omitted and with obvious mistakes corrected, but which on the other hand leaves out nothing that adds to the meaning of the speech or illustrates the argument" (PUT REF HERE)
+\end{quote}
+Hansard is available in a variety of versions. The most commonly used and best known version is the Daily Hansard, which appears each morning and reports of the previous day’s proceedings. However, access to this is via an API that only provides the most recent 7 days. For this project, most training and processing will be done on the Historical Hansard dataset, which is a dataset containing all 6 series of Hansard, between 1803 to 2004, though it is expected that some of the older documents will be less useful for this project due to the likelihood of them using outdated speech that would no longer be relevant.
+
+The Historical Hansard Dataset is available online in an XML format. Multiple documents per series are available, each document covering a few days debates at most. It is a large dataset, reaching around 10Gb in size in total. Most of the documents available are scanned from hard copies, rather than typed up directly, meaning there is a possibility of small errors from the scanning process that may have to be dealt with. Additionally, from preliminary looks, the data itself appears to be only loosely formatted, and each of the six series appear to be formatted in a slightly different way, so any system designed to read this data will have to be capable of dealing with any changes to formatting.
+
+\subsection{Natural language Processing}
 To prepare for the project, there were two major areas needing research; Natural Language Processing, and the Hansard Dataset.
 
 Research began on the Hansard Dataset, where the first task was to download the actual dataset, a 10Gb verbatum record of everything said in parliament between 1803 and 2004, but “...with repetitions and redundancies omitted and with obvious mistakes corrected…" (https://www.commonwealth-hansard.org/about-hansard.html)

@@ -4,13 +4,14 @@ Documentation/Dissertation/*
 Documentation/Dissertation/Appendixes/*
 Documentation/Dissertation/Chapters/*
 Documentation/Dissertation/References/*
-Documentation/Poster/*
+
 
 # except these types of files
 !*.tex
 !*.bib
 !*.pdf
 !*sty
+!*.docx
 
 # even if they are in subdirectories
 !*/
@@ -18,3 +19,4 @@ Documentation/Poster/*
 /Python/.idea/
 /Python/venv/
 /Python/__pycache__/
+Documentation/Poster/
