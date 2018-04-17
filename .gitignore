@@ -1,17 +1,18 @@
 # ignore everything in Documentation
-Documentation/*
-Documentation/Dissertation/*
-Documentation/Dissertation/Appendixes/*
-Documentation/Dissertation/Chapters/*
-Documentation/Dissertation/References/*
+Documentation/**
+# Documentation/Dissertation/*
+# Documentation/Dissertation/Appendixes/*
+# Documentation/Dissertation/Chapters/*
+# Documentation/Dissertation/References/*
 
 
 # except these types of files
 !*.tex
 !*.bib
 !*.pdf
-!*sty
+!*.sty
 !*.docx
+!*.odt
 
 # even if they are in subdirectories
 !*/
