@@ -16,6 +16,7 @@ Documentation/**
 
 # even if they are in subdirectories
 !*/
+!Documentation/Dissertation/Images/*
 
 /Python/.idea/
 /Python/venv/
