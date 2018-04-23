@@ -9,7 +9,8 @@ Documentation/**
 # except these types of files
 !*.tex
 !*.bib
-!*.pdf
+!*.bst
+!*.pdf 
 !*.sty
 !*.docx
 !*.odt
