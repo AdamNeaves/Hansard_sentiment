@@ -152,7 +152,8 @@
 \newcommand{\helv}{ 
 	%bold, 18point, 21point line spacing
 	\fontfamily{phv}\fontseries{b}\fontsize{18}{21}\selectfont
-} 
+}
+
 
 \def\labelenumi{\arabic{enumi}.} 
 \def\theenumi{\arabic{enumi}} 
@@ -270,6 +271,12 @@
 \def\listoftables{\section*{LIST OF TABLES}
  {\parskip=0pt \@starttoc{lot}}}
 \let\l@table\l@figure
+
+\def\listofalgorithms{\section*{LIST OF ALGORITHMS}
+ {\parskip=0pt \@starttoc{lol}}}
+\let\l@algorithms\l@table
+
+\renewcommand{\lstlistingname}{Algorithm}% Listing -> Algorithm 
 
 \def\maketitle{\par
  \begingroup

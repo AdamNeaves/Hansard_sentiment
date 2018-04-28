@@ -32,7 +32,7 @@ The Data Downloader is designed to download all of the Hansard Dataset from the 
 
 The files are to be downloaded from the \href{http://www.hansard-archive.parliament.uk}{Hansard Archive} page. Each of the six series has a subdirectory under that root page, that contain all the data files. The data files have a distinct naming pattern that can be referenced using something like Regular Expressions in order to automate the downloading and searching of the files.
 
-Originally, this was not going to be a part of the main system, as it is possible to download the data manually. However, only ten files are displayed on the web page each time, and some of the series have up to a thousand files to download. This can be seen in Figure \ref{fig:Archive_Screenshot} %TODO therefore I need to implement....
+Originally, this was not going to be a part of the main system, as it is possible to download the data manually. However, only ten files are displayed on the web page each time, and some of the series have up to a thousand files to download. This can be seen in Figure \ref{fig:Archive_Screenshot}. Therefore, an automated downloader needs to be implemented that can download the data automatically. The Design should allow the user to select which series they want to download and where it should be saved, and then it should automatically connect to the web page and attempt to download all the files.
 
 \begin{figure}[ht]
 	\includegraphics[width=\textwidth]{archive_screenshot}
@@ -42,15 +42,17 @@ Originally, this was not going to be a part of the main system, as it is possibl
 
 \subsection{Data Parser}
 \label{sec:des_data_parser}
-The Parser is designed to read the original files downloaded by the Data Downloader, and save all relevant data in separate location, in a more consistent layout than that of the original dataset. This should allow any usage of the data from other parts of the system to be much simpler, and thus faster and less prone to error. It should ensure speech is always attributed to the correct person, even if their names are presented differently. This means the Data Parser will have to utilize a part of NLP known as Name Disambiguation, which is not a simple task. %TODO either explain Name disambiguation here, or ref the later chapter 
+The Parser is designed to read the original files downloaded by the Data Downloader, and save all relevant data in separate location, in a more consistent layout than that of the original dataset. This should allow any usage of the data from other parts of the system to be much simpler, and thus faster and less prone to error. It should ensure speech is always attributed to the correct person, even if their names are presented differently. This means the Data Parser will have to utilize a part of NLP known as Name Disambiguation, which is not a simple task, and is discussed in further detail in Section \ref{sec:imp_name_disamb}.
 
 \subsection{Manual Annotation Tool}
 \label{sec:des_annotation_tool}
-%TODO first, explain why ground truth is important
+%TODO first, explain why ground truth is important - PROBS NEED BOOK
+In Artificial Intelligence development, there is a concept known as \emph{Ground Truth}, which relates to Supervised and Semi-Supervised algorithms. Ground Truth is a representation of the reality that an algorithm wants to predict. 
 The Manual Annotation Tool (the MAT) is designed to allow a user to create a testing and training dataset from the parsed data. It should show a selection of speech to the user, and ask them to annotate it as either a positive sentiment, negative sentiment, or neutral sentiment. These choices will be recorded, and can then be used to train a machine learning algorithm to extract sentiment from the remaining data. It would also provide the option to edit the text, the MP's name, or the topic title, to allow the user to correct typos transfered from the original dataset.
 
 Originally, the MAT would display an entire paragraph of speech, displaying everything a Member of Parliament said about a topic on a particular day. However, this would often display too much text, with parts showing positive sentiment and other parts of the same text showing negative sentiment. Additionally it was realized that attempting to train an AI algorithm on these large blocks of text would be far too complex. For those reasons, the MAT was modified so that it would only display a single sentence at a time, allowing a more accurate way of annotating sentiment.
-%TODO explain inputs and outputs
+
+The MAT is designed to accept the parsed data from the parser described in Section \ref{sec:des_data_parser}, and should break the speech found in the data down into sentences, then output the sentence and sentiment annotated to it as described in Section \ref{sec:des_anotate_data}
 
 \subsection{Sentiment Analyzer}
 \label{sec:des_sentiment_analyzer}
@@ -60,8 +62,11 @@ As AI algorithms are trained on "Features" rather than plain text, the Sentiment
 
 \subsection{Search Tool}
 \label{sec:des_search_tool}
-The Search Tool will be used by the user to search through the data for a particular Member of parliament, to get their speech and its sentiment, or for a particular topic, to get the sentiment expressed about that topic. 
-%TODO mockup interface, example search and reponse. Basically this needs more detail
+The Search Tool will be used by the user to search through the data for a particular Member of Parliament, to get their speech and its sentiment, or for a particular topic, to get the sentiment expressed about that topic.
+
+The user would be presented with an option to search for either a Member of Parliament by name or a topic by title. It should then display the results of the search, showing examples of what was said about the topic, or if searching by MP, showing the topics they discussed and the things they said. It should also display an average sentiment expressed by that person or about that topic.
+
+This average would have to be calculated in some way, likely by attributing a score of -1 for negative sentiment and +1 for positive sentiment. It would then likely be displayed using some sort of descriptive value rather than just the number; such as \emph{Neutral} for a score around the 0 mark, or \emph{Very Positive} for something close to 1.
 
 \section{Data Design}
 \label{sec:des_data}
@@ -69,9 +74,20 @@ As parts of the system were designed to modify the layout of the original data a
 
 \subsection{Parsed Data}
 \label{sec:des_parsed_data}
-%TODO input data example
-For the parser, the format of the data files that it produces was originally designed as thus:
-\begin{lstlisting}[language=XML]
+The original Hansard Data was a set of XML files generated from the official Hansard Report. Some of the files referring to older reports, such as those from the 1800s, appear to have been scanned in using some form of Optical Character Recognition, and thus contained some slight errors in some of the text. This also means that the data is not structured as well as might be expected from XML data.
+
+As can be seen in figure \ref{fig:S5_sample_screenshot}, the data files contain data that is not useful to the project. For instance, there are references to images that were not included as a part of the download, presumably a scan from the original written report, though this is not made clear. In addition, there are \emph{<p>} tags, representing paragraphs, which include ID numbers that are also not needed by this project.
+
+\begin{figure}[ht]
+	\includegraphics[width=\textwidth]{S5_sample_data}
+	\caption{A sample of data from the file \emph{S5CV0021P0.xml}, a file from the fifth series of data}
+	\label{fig:S5_sample_screenshot}
+\end{figure}
+For the parser, the format of the data files that it produces was originally designed as shown in Algorithm \ref{lst:parsed_data}.
+\begin{lstlisting}[language=XML,
+				   float=ht,
+				   caption={Earlier version of the Parsed Data design},
+				   label={lst:parsed_data}]
 <date dateformat="1984/04/13">	
     <speech>
         <member>memberName</member>
@@ -84,8 +100,8 @@ For the parser, the format of the data files that it produces was originally des
 ....
 \end{lstlisting}
 The ellipses represent repeats, so inside the \emph{Date} tags, multiple \emph{speech} tags, all formatted like the one shown, can exist. A file may also contain multiple \emph{Date} tags. 
-%TODO what size were the files that were being generated?
-This, however, was causing some issues during development based around the size of the produced files, as each entire series of data was being parsed into the same file. In order to combat the slow speeds of accessing such large files, and other issues caused by the layout, the data format was changed. Now, each unique date found within the source is saved in a separate file, and within this file the data was formatted in its final form.
+
+This, however, was causing some issues during development based around the size of the produced files, which were growing to thousands of lines long and several Gigabytes in size, as each entire series of data was being parsed into the same file. In order to combat the slow speeds of accessing such large files, and other issues caused by the layout, the data format was changed. Now, each unique date found within the source is saved in a separate file, and within this file the data was formatted in its final form.
 Each date file is an XML file, the structure of which can be represented as a tree, shown in Figure \ref{fig:parsed_data_tree}.
 
 \begin{figure}[ht]
@@ -102,7 +118,7 @@ The formatting of the annotated data files was also designed at this stage. It w
 
 \textbf{Sentence, Sentiment, Member, Topic}
 
-As shown, it was decided that the best way of annotating full speech was to split it by sentence, so that each sentence would be annotated with its own sentiment. This would simplify the training process for the machine learning algorithms, as it was thought that trying to train it on too large a block of text would result in sub par results. %TODO why?
+As shown, it was decided that the best way of annotating full speech was to split it by sentence, so that each sentence would be annotated with its own sentiment. This would simplify the training process for the machine learning algorithms, as it was thought that trying to train it on too large a block of text would result in sub par results, as these larger blocks of text can often express multiple sentiments interwoven into the speech. Attempting to train on, or even annotate, these larger more complicated blocks of speech would mean having to decide what the most important sentiment expressed would be, or work out the average sentiment. Due to this, any AI algorithm attempting to train on this would be training on data that expressed a varied sentiment, rather than a more polarized sentiment expressed in a single sentence. Of course, it is still possible that a single sentence might express positive sentiment towards one thing and simultaneously a negative sentiment towards something else, but dealing with these issues would take a lot more work than can be done on this project. 
 
 \section{User Interface}
 \label{sec:des_user_interface}
@@ -120,28 +136,27 @@ Naives Bayes is a supervised algorithm with uses the statistical analysis of Bay
 
 \subsection{Parsing}
 \label{sec:des_Parsing_algorithm}
-%TODO Explain disoranized data
-The Data Parser needs to find and extract useful speech from the original data. Though said data is somewhat disorganized, there are exploitable patterns that the Parser can use to find as much speech as possible. The overall method is documented in the following pseudo-code:
-\begin{lstlisting}
-FOR EACH FILE
-    FOR EACH DATE TAG
-    	IF(DATE_FILE FOR DATE EXISTS)
+The Data Parser needs to find and extract useful speech from the original data. Though said data is somewhat disorganized, in that speech can exist down almost any route through the XML tree and occur at any level, there are exploitable patterns that the Parser can use to find as much speech as possible. The overall method is documented in the pseudo-code Algorithm \ref{lst:parser_pseudocode}:
+\begin{lstlisting}[float=ht, caption={Data Parser Pseudo-code}, label={lst:parser_pseudocode}]
+for EACH FILE
+    for EACH DATE TAG
+    	if(DATE_FILE FOR DATE EXISTS)
         	LOAD DATE_FILE CONTENTS INTO DATE_XML
-    	ELSE
+    	else
         	CREATE FILE
         	CREATE DATE_XML
-    	FOR EACH CONTRIBUTION IN DATE_TAG
+    	for EACH CONTRIBUTION in DATE_TAG
         	GET CONTRIBUTION PARENT_TAG
         	GET MEMBER NAME AS CHILD OF PARENT_TAG
         	GET TITLE AS SIBLING OF PARENT_TAG
         	GET SPEECH FROM CONTRIBUTION
-        	IF MEMBER HAS BEEN SEEN BEFORE IN CURRENT DATE_FILE
-        	    IF TOPIC HAS BEEN DISCUSSED BY MEMBER BEFORE
+        	if MEMBER HAS BEEN SEEN BEFORE in CURRENT DATE_FILE
+        	    if TOPIC HAS BEEN DISCUSSED BY MEMBER BEFORE
         			ADD SPEECH TO TOPIC
-        		ELSE
+        		else
         			CREATE NEW TOPIC
         			ADD SPEECH
-        	ELSE
+        	else
         		CREATE NEW MEMBER TAG
         		ADD TOPIC TO MEMBER TAG
         		ADD SPEECH TO TOPIC
@@ -151,3 +166,6 @@ FOR EACH FILE
 \end{lstlisting}
 
 This shows that, so long as the parser can find a tag in the source XML for the date, all other relevant information can be found in relation to the position of this date tag in the XML. It also shows the method of ensuring all speech by one Member of Parliament is correctly attributed to them, to avoid repeated mentions of the same MP in the same file.
+
+\section{Conclusion}
+Once the design of all the major parts of the project had been finalized, this report will now move on to the implementation section, to discuss how implementing these designs went, what became more difficult than expected and what, if anything, had to be changed, as FDD means that once a design is completed, it can still be modified and changed depending on implementation.
