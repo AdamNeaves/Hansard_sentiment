@@ -46,9 +46,9 @@ The Parser is designed to read the original files downloaded by the Data Downloa
 
 \subsection{Manual Annotation Tool}
 \label{sec:des_annotation_tool}
-%TODO first, explain why ground truth is important - PROBS NEED BOOK
-In Artificial Intelligence development, there is a concept known as \emph{Ground Truth}, which relates to Supervised and Semi-Supervised algorithms. Ground Truth is a representation of the reality that an algorithm wants to predict. 
-The Manual Annotation Tool (the MAT) is designed to allow a user to create a testing and training dataset from the parsed data. It should show a selection of speech to the user, and ask them to annotate it as either a positive sentiment, negative sentiment, or neutral sentiment. These choices will be recorded, and can then be used to train a machine learning algorithm to extract sentiment from the remaining data. It would also provide the option to edit the text, the MP's name, or the topic title, to allow the user to correct typos transfered from the original dataset.
+In Artificial Intelligence development, there is a concept known as \emph{Ground Truth}, which is a representation of the reality that an algorithm wants to predict; such as the changes to the stock market or the sentiment expressed by a piece of text. It's often commonly represented by the training data used to train an AI algorithm when using a supervised or semi-supervised algorithm. Thus, for this project, the ground truth must be decided upon and represented by a set of training and testing data.
+
+The Manual Annotation Tool (the MAT) is designed to allow a user to create said testing and training datasets from the parsed data. It should show a selection of speech to the user, and ask them to annotate it as either a positive sentiment, negative sentiment, or neutral sentiment. These choices will be recorded, and can then be used to train a machine learning algorithm to extract sentiment from the remaining data. It would also provide the option to edit the text, the MP's name, or the topic title, to allow the user to correct typos transfered from the original dataset.
 
 Originally, the MAT would display an entire paragraph of speech, displaying everything a Member of Parliament said about a topic on a particular day. However, this would often display too much text, with parts showing positive sentiment and other parts of the same text showing negative sentiment. Additionally it was realized that attempting to train an AI algorithm on these large blocks of text would be far too complex. For those reasons, the MAT was modified so that it would only display a single sentence at a time, allowing a more accurate way of annotating sentiment.
 
@@ -67,6 +67,7 @@ The Search Tool will be used by the user to search through the data for a partic
 The user would be presented with an option to search for either a Member of Parliament by name or a topic by title. It should then display the results of the search, showing examples of what was said about the topic, or if searching by MP, showing the topics they discussed and the things they said. It should also display an average sentiment expressed by that person or about that topic.
 
 This average would have to be calculated in some way, likely by attributing a score of -1 for negative sentiment and +1 for positive sentiment. It would then likely be displayed using some sort of descriptive value rather than just the number; such as \emph{Neutral} for a score around the 0 mark, or \emph{Very Positive} for something close to 1.
+
 
 \section{Data Design}
 \label{sec:des_data}
@@ -124,6 +125,14 @@ As shown, it was decided that the best way of annotating full speech was to spli
 \label{sec:des_user_interface}
 Due to the complexity of the project, it was decided that the system would only be interacted with via the command line. This meant that, beyond basic menus, no GUI had to be designed for use. It was though that, should there be time during or after the project development, a GUI could be designed which worked with the existing functions, but it was not considered system critical to have a GUI.
 
+The search tool described in Section \ref{sec:des_search_tool} is designed to be the part used by most users, and so a mock up of the command line interface is shown in Figure \ref{fig:search_mockup}
+
+\begin{figure}[ht]
+\includegraphics[width=\textwidth]{search_mockup}
+\caption{A mockup design of the Search tool, which would be the main user interface for the project}
+\label{fig:search_mockup}
+\end{figure}
+
 \section{Algorithm Design}
 \label{sec:des_algorithm}
 
@@ -131,8 +140,21 @@ Due to the complexity of the project, it was decided that the system would only 
 \label{sec:des_AI_algorithm}
 There are many potential algorithms that may be chosen for this project. It may prove difficult to choose one, or more, without simply trying them. The design calls for the use of Naive Bayes at first, mainly as its one provided by the NLTK package. However, multiple other algorithms may be tested, and the results compared to decide on the final choice. Should multiple algorithms prove useful, a voting system could be implemented, which applies each algorithm, and they cast a vote to what sentiment they calculate the text as. The votes would then be counted and the result shown.
 
-\subparagraph{Naive Bayes} %TODO MORE DETAIL ON NAIVE BAYES GOD DAMMIT
+\subsubsection{Naive Bayes}
 Naives Bayes is a supervised algorithm with uses the statistical analysis of Bayes Theorem as to classify data. It treats each feature as completely distinct, which isn't accurate for NLP, but will may suffice for development of the system.
+
+Bayes Theorem provides a way to calculate the probability of something occurring, for this project text being positive or negative, given it's prior probability, and the probability of it given the Data provided.\cite{Mitchell1997}. Text being classified as one thing or the other is usually called a \emph{Hypothesis} in this regard. The mathematical representation of Bayes Theorem can be seen in Figure \ref{fig:bayes_theorem}.
+\begin{figure}[ht]
+$$ P(h \mid D) = \frac{P(D \mid h) \, P(h)}{P(D)} $$
+\caption{Bayes Theorem}
+\label{fig:bayes_theorem}
+\end{figure}
+
+Where $P(h \mid D)$ is the probability of the Hypothesis (in the case of this assignment the prediction that a sentence is either Positive or Negative) holding true given the data provided. $P(D \mid h)$ is the probability that the data is true, given the hypothesis; and $P(h)$ and $P(D)$ are the probabilities of the Hypothesis and the Data respectfully.
+
+$P(h)$ is usually called the \emph{Prior Probability} of the Hypothesis, and reflects any background knowledge about the chance that the hypothesis is correct. In this project, this is likely to represent any form of bias in the training data, in that the prior probability of text being classified as positive would be equal to the percentage of training data that is labeled positive.
+
+The Naive Bayes Classifier uses Bayes Theorem in a learning step in which the various probabilities of a class, such as \emph{positive} or \emph{negative}, are estimated, given the different attributes or the data\cite{Mitchell1997}. These estimations correspond to the learned hypothesis, which is then applied to the new instances to classify them.
 
 \subsection{Parsing}
 \label{sec:des_Parsing_algorithm}

@@ -9,11 +9,54 @@
 \section{Data Downloading}
 \label{sec:imp_data_download}
 %discuss data downloader implementation, discussing file name pattern and challenges with that, as well as %difficulties with storage as dataset is large
+One of the first parts of the system to be implemented was the Data Downloader. This was done first in order to get the full dataset downloaded as fast as possible, and also as a form of Python practice.
+
+As mentioned in Section \ref{sec:des_data_downloader}, the files that needed to be downloaded from the online archive had a specific format that made finding all the files required easier. Each series had a specific URL, and all files for that series would be stored as children of that URL in zip files. The naming pattern for the files was as follows:
+
+\textbf{S\emph{s}V\emph{vvvv}P\emph{p}.zip}
+
+where \emph{s} is the series from 1 to 6, \emph{vvvv} is 4 digits representing the volume of the series, starting at 0001, the max value depending on which series it is a part of, and \emph{p} is a part number, as some files were split into multiple parts. This could be zero, if the file is not split, or a one or two if it has been split. For instance \emph{S6V0141P1.zip} would represent the \emph{1st} part of the \emph{141st} volume in series \emph{6}.
+
+There was one difference to this pattern, discovered during development. Series 5 of Hansard was separated into records for the \emph{House of Commons} and the \emph{House of Lords}. For these, the letter \emph{C} or \emph{L} was added before the V to differentiate the two series. Afterwards, series 6 also contained the letter \emph{C} to show that it was also only for the house of commons. So, for Series 6, volume 141, part 1, the file format would actually be \emph{S6CV0141P1.zip}.
+
+\subsection{Online Connection}
+\label{sec:imp_online_connect}
+Python has a commonly used library for HTTP connections called \href{http://docs.python-requests.org/en/master/}{\emph{Requests}}. It provides an API (\emph{Application Programming Interface}) allowing easy connection to a provided URL, simply by providing a URL. Using this API, the downloader can check to see if a file exists, using the code snippet Algorithm \ref{lst:downloader_snippet}.
+
+\begin{lstlisting}[float=ht,
+				   caption={Snippet of the Downloader Code},
+				   label={lst:downloader_snippet}]
+for i in range(0, 100):  # change depending on how many files it looks like exist
+    for j in range(0, 4):  # just to make sure. Not seen any files with P3 at the end but you never know
+        temp_url = '{}{}/{}'.format(url_base, url_add[series-1], file_name_format.format(series, i, j))
+        print("Checking: {}".format(file_name_format.format(series, i, j)))
+        r = requests.get(temp_url)
+        status = r.headers['content-type']
+# if the zip file exists, the type will appear like this:
+        if status == 'application/zip; charset=utf-8':  
+            print("FILE FOUND")
+            zip_ref = zipfile.ZipFile(io.BytesIO(r.content))
+            zip_ref.extractall(save_loc)  # extract the file
+            zip_ref.close()
+
+        else:  # if the zip file doesn't exist an error page is returned instead
+            print("FILE NOT FOUND")
+\end{lstlisting}
+
+Effectively, this code snippet loops through the files following the described pattern, and gets the status of the constructed URL. the \emph{header} part returns a string that describes the type of file returned, as if the file does not exist, it still returns a 404 error page rather than not returning anything. If the file does exist, however, it returns a string that says it is a ZIP file type (\emph{"application/zip"}).
+
+If the file does exist, the downloader also makes use of a library called \emph{zipfile}, which allows it to handle zip files internally. It can then extract the data file from the compressed zip file, and save it to the designated directory on the local machine.
+
+\subsection{Dataset Size}
+\label{sec:imp_dataset_size}
+
+The total Historical Hansard Dataset that was downloaded by the project is \emph{14.4GB}, and consists of \emph{2503} files, demonstrating the need for the automated downloading. Due to this size, the dataset could not be saved to the University file system, and so was saved to an external hard drive instead. This meant that some parts of the later development were slowed due to the USB 3 connection used by said hard drive. 
 
 \section{Data Parsing}
 \label{sec:imp_data_parse}
-%discuss experimentation with how to extract data from original dataset. discuss change made to format of %parsed data part way through to make it easier to annoate.
-
+%discuss experimentation with how to extract data from original dataset. discuss change made to format of parsed data part way through to make it easier to annoate.
+During development of the system, the Data Parser and associated methods were where the most time was spent, due to many unforeseen complications.
+ 
 \subsection{Name Recognition and Disambiguation}
 \label{sec:imp_name_disamb}
 %here discuss difficulties in name disambiguation. discuss attempted methods of using NLTKs named entity %thing and the implemented regex solution. Discuss how the regex solution only works because the names are %presented in a predicable pattern, and would not be valid outside of this dataset
@@ -72,8 +115,10 @@ Mr. A. B. Neaves & Mr. Neaves      & True, though again ambiguous    \\
 
 For instance, as shown in table \ref{tbl:name_match}, first names might be shortened to just an initial, or even fully removed. Honorifics are not guaranteed to be present, but are very important if they are, as two different names may differ from only that.
 
-The implemented algorithm for this project follows the same assumptions mentioned in section \ref{sec:imp_name_disamb}, and is designed to allow for some false negatives (wherein two names that \emph{do} refer to the same person might not appear as the same person) to avoid any false positives at all, as speech accidentally attributed to the wrong person would be worse than accidentally having duplicate references to a person. The basic algorithm implemented is as follows:
-\begin{lstlisting}
+The implemented algorithm for this project follows the same assumptions mentioned in section \ref{sec:imp_name_disamb}, and is designed to allow for some false negatives (wherein two names that \emph{do} refer to the same person might not appear as the same person) to avoid any false positives at all. This is because it was desicided that speech accidentally attributed to the wrong person would be worse than accidentally having duplicate references to a person, since a human reader can likely see the connection between \emph{Mr. Adam Neaves} and \emph{Mr. A Neaves}, but there would be no way for them to know that some speech was attributed to the wrong person. The basic algorithm implemented is as shown in Algorithm \ref{lst:name_match}.
+\begin{lstlisting}[float=ht,
+				   caption={Pseudocode representing the name matching method},
+				   label={lst:name_match}]
 if BOTH NAMES ARE EXACTLY THE SAME
 	return True
 SPLIT BOTH NAMES INTO COMPONENT WORDS
@@ -97,3 +142,8 @@ if SURNAME_MATCH, HONORIFIC_MATCH and FORENAME_MATCH ARE True
 	return true
 else return False
 \end{lstlisting}
+
+This method does work so long as the assumptions in Section \ref{sec:imp_name_disamb} hold true. It would not be a valid method of matching names in a more generalized setting where the formatting and appearance of names would vary wildly.
+
+\section{Manual Annotation Tool}
+\label{sec:imp_annotation_tool}
