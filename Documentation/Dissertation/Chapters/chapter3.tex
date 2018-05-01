@@ -196,14 +196,97 @@ Additionally, though the parsed data consisted of more files than the original d
 \section{Manual Annotation Tool}
 \label{sec:imp_manual_annotate}
 
-With all the source data successfully parsed, the Manual Annotation Tool (MAT) could be developed to use that data to create the training dataset discussed in Section \ref{sec:des_anotate_data}
+With all the source data successfully parsed, the Manual Annotation Tool (MAT) could be developed to use that data to create the training dataset discussed in Section \ref{sec:des_anotate_data}.
+
+Originally, as discussed in Section \ref{sec:des_annotation_tool}, this tool was designed to print everything a single MP said about a particular topic, but this often meant far too much text was printed on the screen at any one time. Additionally, this tool was also designed to allow the user to edit the name of the MP, or the topic, in case of typos in the text. However, it was felt that the tool was overcomplicated by this added functionality.
+
+Instead, the Annotation tool now only displays one sentence at a time, and allows the user to quickly annotate it by entering only a single character, as shown in Figure \ref{fig:annotate_screenshot}. That helped to speed up the process of annotating data, which was already a lengthy process, in order to create the training set needed for the Artificial Intelligence Algorithm.
+
+\begin{figure}[ht]
+\includegraphics[width=\textwidth]{annotate_screenshot}
+\caption{Screenshot from the Annotation Tool running on the Command Line}
+\label{fig:annotate_screenshot}
+\end{figure}
 
 \subsection{Sentence Splitting}
 \label{sec:imp_sentence_split}
 % discuss dificulties getting NLTKs sentence tokenizer to work with the data
+An important part of the update to the Annotation tool was the ability to separate a block of text by sentence. This is not as simple as it sounds, as the text can't just be split whenever a \emph{"."} character is encountered, as there are acronyms in some of the text, and some sentences might include a quote with a period in it, which must be included in the sentence structure.
+
+NLTK does include a sentence tokenizer as a part of it's library. This method is designed to receive a block of text as an input, and returns an array of sentences, split by the tokenizer. However, this function did not work perfectly for the data used, as there were a few special cases, such as typos, that the tokenizer provided was not prepared for. In order to improve the quality of the splitting, some parts of the text had to be modified, so that the tokenizer would either stop seeing sentence boundaries where there were none, or missing sentence boundaries. These changes were as follows:
+
+\begin{itemize}
+	\item The word \emph{Honorable} had to replace the word \emph{Hon.}, which was often used as a short hand. NLTK's tokenizer did not recognise this and therefore split sentences on the period of that word.
+	\item If the Members of Parliament discussed some form of percentage, it was commonly refered to as \emph{per cent.}, which the sentence tokenizer saw as the end of a sentence due to the period. This was replaced with the word \emph{percent}.
+	\item The Parser would strip out any new line characters from text before saving it. This, combined with issues from the original data, meant that when a sentence ended, it was common for it to miss out any sort of space between the period that marked the end of the sentence, and the start of the next sentence. Due to this missing space, the tokenizer wouldn't realize that it was supposed to be a sentence boundary and therefore wouldn't split the text. Regular expressions were used to find areas of text where it looked like this had occurred, and would input the space.
+\end{itemize}
+ 
+Following these corrections, the code that performed the sentence splitting became that shown in Algorithm \ref{lst:sentence_split}.
+
+\begin{lstlisting}[float=ht,
+				   caption={Sentence Splitting method, with included regular expressions},
+				   label={lst:sentence_split}]
+def sentence_split(text):
+	# because NLTK's sentence tokenizer recognises hon.
+	# as the end of a sentence, unlike mr. or mrs., we need to
+    # replace that with something it can handle    
+    regex_hon = re.compile(r'\bhon\.', re.IGNORECASE)
+    regex_percent = re.compile(r'\bper cent\.', re.IGNORECASE)
+    # some sentences are missing the space. Add it back in.
+    regex_sentence_end = re.compile(r'([a-z])\.([A-Z])') 
+    text = re.sub(regex_hon, "honorable", text)
+    text = re.sub(regex_percent, "percent", text)
+    text = re.sub(regex_sentence_end, r'\1. \2', text)
+    text = text.replace('\n', ' ')
+    # once all regex is done, send text to the tokenizer
+    return sent_tokenize(text)
+\end{lstlisting}
+
+As can be seen by this function, each replacement required is handled using regular expressions, which allow it to quickly search the whole text given to it for these issues described, and fix them, before the text is then sent to the sentence tokenizer of NLTK to be split into an array. This method works well, though it is not the most maintainable, as it would have an issue if many more special cases were found.
+
 \section{Sentiment Analyzer}
 \label{sec:imp_sentiment_analyzer}
+
+The sentiment analysis tool builds upon the methods provided by NLTK. The tool provides a method to train the AI algorithm, and also methods to analyze the sentiment for sentences and paragraphs using the trained algorithm. Though NLTK does provide a sentiment analyzer as part of its package, this was a pre-trained algorithm that had been trained on a Movie Review corpus. It was therefore expected that such an algorithm would not be suitable for this project, as no way to retrain on custom data was found. Therefore, a custom sentiment analyzer was created using the Naive Bayes Algorithm.
+
+This Sentiment Analzyer was first trained on only a small set of training data designed only to be enough to allow development. Without a small dataset, the Sentiment Analyzer module could not be developed, as there would be no way of testing that it functioned without anything to base the AI model on.
 % discuss issues with not annotating enough data.
 \subsection{Naive Bayes Classifier}
 \label{sec:imp_naive_bayes}
 % discuss results of Naive Bayes. Discuss choice of features (top 3000 most popular words, true of false)
+
+Naive Bayes, as described in Section \ref{sec:des_naive_bayes}, was the AI algorithm provided as a part of the NLTK library.
+
+\subsubsection{Creating Features}
+
+Features, in the case of AI training, are a representation of the thing an AI is trying to learn to predict\cite{Mitchell1997}. For instance, if an AI algorithm was being trained to predict the weather based off current conditions, the current conditions would be the set of features, each separate condition such as  current temperature, barometric pressure, humidity etc. would be a feature. In the case of a supervised algorithm, such as Naive Bayes, it is provided with a list of features, and the class that is attributed to that set of features. So, for the example given, Table \ref{tbl:weather_feature} would be an example set of training data.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{r | r | r || l}
+\textbf{Temperature} & \textbf{Pressure} & \textbf{Humidity} & \textbf{Weather Class} \\
+\hline
+Low  & Medium  & High & \textbf{Storm}    \\
+High & Low     & Low  & \textbf{Sunshine} \\
+High & Low     & High & \textbf{Storm}
+
+\end{tabular}
+\caption{Weather training data as an example of features}
+\label{tbl:weather_feature}
+\end{table}
+
+In order to be able to use the training data to train the algorithm, the data must first be turned into a set of \emph{Features} that the algorithm could use to base it's hypothesis on. Following the Tutorial by \textbf{Sentdex}\cite{NLTKYoutubePlaylist}, it was decided that the feature set would be the set of 3000 most commonly used words from the training dataset. The set of features would be represented by a \emph{Key Value dictionary}, where the word acts as the unique key for each value, and the value is a Boolean, representing whether or not the word is present in the text. This method has it's limitations, discussed in Section \ref{sec:evl_AI}. However, it does limit the effect of uncommonly used words, as they won't be a part of the feature set and can therefore be ignored by the algorithm.
+
+\subsubsection{Training the Algorithm}
+%training set randomized
+%split 90/10. Maybe we should do the 10 fold thing first then write this...
+Thanks to the way the algorithm had been implemented in 
+\subsubsection{Testing Results}
+%present results here from the training/testing. 
+\subsubsection{Saving the Model}
+
+In order to be useful, the algorithm could not be retrained every time. As the training dataset grows, the time taken to train the algorithm also grows, so it would be inefficient to retrain each time. Thankfully, a python module called \href{https://docs.python.org/3/library/pickle.html}{Pickle} allows for the saving of Python classes as a file on the computer. This module can allow the trained model to be saved and loaded from a file created by the pickle module, and avoids the need to retrain it each time the software is run.
+
+\section{Implementation Conclusion}
+
+Moving on from implementation, this report will now move on to discuss the methods of testing used during and after development, as well as discussing any areas where more rigorous testing, or just more testing in general, would have been useful.

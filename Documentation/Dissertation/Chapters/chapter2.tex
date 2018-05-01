@@ -143,6 +143,7 @@ The search tool described in Section \ref{sec:des_search_tool} is designed to be
 There are many potential algorithms that may be chosen for this project. It may prove difficult to choose one, or more, without simply trying them. The design calls for the use of Naive Bayes at first, mainly as its one provided by the NLTK package. However, multiple other algorithms may be tested, and the results compared to decide on the final choice. Should multiple algorithms prove useful, a voting system could be implemented, which applies each algorithm, and they cast a vote to what sentiment they calculate the text as. The votes would then be counted and the result shown.
 
 \subsubsection{Naive Bayes}
+\label{sec:des_naive_bayes}
 Naives Bayes is a supervised algorithm with uses the statistical analysis of Bayes Theorem as to classify data. It treats each feature as completely distinct, which isn't accurate for NLP, but will may suffice for development of the system.
 
 Bayes Theorem provides a way to calculate the probability of something occurring, for this project text being positive or negative, given it's prior probability, and the probability of it given the Data provided.\cite{Mitchell1997}. Text being classified as one thing or the other is usually called a \emph{Hypothesis} in this regard. The mathematical representation of Bayes Theorem can be seen in Figure \ref{fig:bayes_theorem}.
@@ -156,7 +157,7 @@ Where $P(h \mid D)$ is the probability of the Hypothesis (in the case of this as
 
 $P(h)$ is usually called the \emph{Prior Probability} of the Hypothesis, and reflects any background knowledge about the chance that the hypothesis is correct. In this project, this is likely to represent any form of bias in the training data, in that the prior probability of text being classified as positive would be equal to the percentage of training data that is labeled positive.
 
-The Naive Bayes Classifier uses Bayes Theorem in a learning step in which the various probabilities of a class, such as \emph{positive} or \emph{negative}, are estimated, given the different attributes or the data\cite{Mitchell1997}. These estimations correspond to the learned hypothesis, which is then applied to the new instances to classify them.
+The Naive Bayes Classifier uses Bayes Theorem in a learning step in which the various probabilities of a class, such as \emph{positive} or \emph{negative}, are estimated, given the different attributes or the data\cite{Mitchell1997}. These estimations correspond to the learned hypothesis, which is then applied to the new instances of sentences to classify them.
 
 \subsection{Parsing}
 \label{sec:des_Parsing_algorithm}
@@ -191,5 +192,5 @@ for EACH FILE
 
 This shows that, so long as the parser can find a tag in the source XML for the date, all other relevant information can be found in relation to the position of this date tag in the XML. It also shows the method of ensuring all speech by one Member of Parliament is correctly attributed to them, to avoid repeated mentions of the same MP in the same file.
 
-\section{Conclusion}
+\section{Design Conclusion}
 Now that the design of all the major parts of the project had been finalized, this report can now move on to the implementation section, to discuss how implementing these designs went, what became more difficult than expected and what, if anything, had to be changed, as FDD means that once a design is completed, it can still be modified and changed depending on implementation.
