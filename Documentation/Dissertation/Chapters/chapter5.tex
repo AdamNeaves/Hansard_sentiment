@@ -1,20 +1,65 @@
 \chapter{Evaluation}
+\section{Requirements Comparison}
+\label{sec:evl_require_comp}
+Table \ref{tbl:requirements_comp} shows the comparison between what required features were set out in Section \ref{sec:des_Architecture}, and what features made it in to the developed system.
 
-Examiners expect to find in your dissertation a section addressing such questions as:
+\begin{table}[ht!]
+\centering
+\begin{tabular}{R || L | l | L}
+	\textbf{Feature Num} & \textbf{Required Function} & \textbf{Developed Function} & \textbf{Notes} \\
+	\hline \hline
+	1 & Download the Dataset               & Fully Developed     & \\
+	2 & Parse the Original data            & Fully Developed     & Was far more work than anticipated\\
+	3 & Provide Ability to Annotate        & Fully Developed     & \\
+	4 & Train AI on Annotated Data         & Fully Developed     & Had not annotated enough data \\
+	5 & Search parsed data for MP or Topic & Not Developed       & \\
+	6 & Use AI to extract Sentiment        & Partially Developed & Only uses naive bayes\\
+	7 & Display comparison of sentiment    & Not Developed       & \\ 	
+\end{tabular}
+\caption{Comparison between required functions and the functions that were developed}
+\label{tbl:requirements_comp}
+\end{table}
 
-\begin{itemize}
-   \item Were the requirements correctly identified? 
-   \item Were the design decisions correct?
-   \item Could a more suitable set of tools have been chosen?
-   \item How well did the software meet the needs of those who were expecting to use it?
-   \item How well were any other project aims achieved?
-   \item If you were starting again, what would you do differently?
-\end{itemize}
+As shown, the project did not manage to complete every requirement that was set out. However, this project did manage to develop an automated sentiment tool that could be trained on the Hansard records, then extract sentiment from sentences or paragraphs given to it, which was one of the main aims of the project.
 
-Other questions can be addressed as appropriate for a project. 
+\subsection{Data Parser Difficulties}
+\label{sec:evl_data_parser}
 
-Such material is regarded as an important part of the dissertation; it should demonstrate that you are capable not only of carrying out a piece of work but also of thinking critically about how you did it and how you might have done it better. This is seen as an important part of an honours degree. 
+One part of the project that was a much larger part of development than expected was the Data Parser, the development of which is described in Section \ref{sec:imp_data_parse}. As described in that section, parsing the dataset turned out to be a much more complex job than anticipated. Some difficulties came from a lack of prior knowledge on Natural Language Processing. It wasn't realised until a good part way through the development of the parser that Name Disambiguation, discussed in section \ref{sec:imp_name_disamb} was such a complex topic of research, or that it would be such a crucial part of the parsing process. Due to the unexpected complexities of developing the parser, other parts of the project suffered. The \emph{Search Tool} and the \emph{Comparison Tool} were never developed, as the time planned for the development of those modules was instead spent on the Parsing Tool. Additionally, trying to understand the layout of the original Hansard Dataset, especially the earlier series, took a lot of time in the beginning of the project, due to a lack of formatting. Attempting to visualise the large and complex XML files caused a delay in the development of the Data Parser, as there was no way to develop the parser until the data structure was understood.
 
-There will be good things and room for improvement with any project. As you write this section, identify and discuss the parts of the work that went well and also consider ways in which the work could be improved. 
+However, despite these difficulties, once they were overcome the Parser itself works very well. It can accurately pull the relevant speech out of any of the Historical Hansard data files provided, and parse it into files that are much easier to handle. The Name Disambiguation and matching functions, discussed in Section \ref{sec:imp_name_disamb} and \ref{sec:imp_name_match}, might not work for more general name matching, but are tailored towards the Hansard data, and work very well for the project itself.
 
-In the latter stages of the module, we will discuss the evaluation. That will probably be around week 9, although that differs each year. 
+\subsection{Annotating Data}
+\label{sec:evl_annotate_data}
+
+It was expected at the beginning of the project that a large amount of time would have to be devoted to annotating data to train the AI algorithm that would be used. The tool developed, discussed in Section \ref{sec:imp_manual_annotate}, was designed to make this job as easy as possible. However, despite attempts, it still took a large amount of time to annotate any data. Part of the problem is likely as the tool discards any sentences labeled as \emph{Neutral}, since it was thought training on neutral data would not help the task at hand. However, A large part of the speech by Members of Parliament is neutral, when they are either stating facts, or just speaking neutrally. This meant that, if the tool was used to check through 100 sentences to annotate, up to around 40 of those sentences might be neutral, and thus discarded. This means that the training and testing dataset is too small to accurately train the AI algorithm. The tool itself is fully functional and works well for the purpose but, due to time constraints caused in part by the difficulties mentioned in Section \ref{sec:evl_data_parser}, not enough data was annotated, and therefore the performance of the Sentiment Analyser suffered.
+
+There is also a potential for bias in the data annotated. It's possible that, as the data was only annotated by a single person, that there could be some bias in what was claimed to be \emph{Positive}, \emph{Negative} or \emph{Neutral}. It's possible that what was annotated as a \emph{Negative} sentence, for instance, might have only been read as negative by the individual, and not actually spoken in a negative manner. This is partially an issue with written text, as it loses any nonverbal communication, such as body language, which is considered an important part of communication\cite{Whaley2007}.
+
+\subsubsection{Outsourcing Data Annotation}
+
+It was realised too late into the project that there was not enough data, nor enough time to fix the issue. However, there are solutions available that could have prevented this issue. Should this project be restarted, a good idea would be to outsource the data annotation to other people. This would require ethics forms to be filled for every participant, but it would solve the issue of there not being enough time to annotate the data. It would also potentially solve the issue of bias in the annotations, if multiple people were given the same sentence the annotate. This does mean there would be a chance of conflict, if there are multiple different opinions on the sentiment of a single sentence, but these could be solved manually if needed, or automatically in the case of a single person having a different opinion than the rest. This would require more work to combine annotations from multiple sources, but it would replace the time spent doing the annotation without outsourcing.
+
+\subsection{AI Algorithms}
+
+For this project, the only AI algorithm used was Naive Bayes, as discussed in Section \ref{sec:imp_sentiment_analyzer}. As no other algorithms were tested, it's possible that Naive Bayes may not be the most useful algorithm for this project. Without other algorithms to compare it to there is no way to know. This issue, combined with the small training dataset, means that the Naive Bayes is inconsistent in its accuracy, as shown in Section \ref{sec:imp_naive_bayes}.
+
+\section{Future Work}
+
+If more time could be spent on the project, the following sections discuss what could be done to improve it.
+
+\subsection{More AI Algorithms}
+
+A good use of this additional time would be to implement more than just the one algorithm, and compare results. Should one algorithm prove better than all others, that one should be the one used for this project. If multiple have good results, a voting system could be implemented that ran the multiple algorithms, collected their results, and combined them to form one "voted for" class for the data provided to them. This would require experimentation to check for accuracy and the best method for voting, but could potentially improve the consistency of the results, if not the accuracy.
+
+\subsection{Develop Search Tool}
+
+One of the major failing during development was that the proposed tool designed to search the parsed data for either a Member of Parliament by name, or a topic up for debate, was never developed. While the main aim of the project, to provide a way to train and use an AI algorithm to automatically extract sentiment from political speech, was completed, the use of this is less intuitive without a method to search the pre-existing data for sentiment. Therefore, it could be wise to use any additional time to complete this original project goal.
+
+\subsection{Work with Additional Data Sources}
+
+An interesting fact about the Hansard Report is the number of different forms it is offered in. The one used by the project is the Historical Hansard Dataset, as discussed in Section \ref{sec:bck_hansard}. However, one potential use for this project is to monitor the sentiment expressed by the politicians of today. Hansard is offered in a Daily format, where a report is released in the morning that documents the debates of the prior day. Modifying the Data Parser so that it may also parse these daily reports would give the project a lot more data to work with. Additionally, the Parlimentary website offers an Atom Feed for these reports, which could potentially be subscribed to by the project, so that when a Daily report is released, the parser could automatically download and parse this report, ready to be analyzed by the rest of the system.
+
+\section{Project Conclusion}
+
+A great deal was learned from doing this project, especially from research done into Natural Language processing, and the development of a full project in Python. It is hoped that work can continue on this project after it has been submitted for the dissertation, and may eventually become a useful program for extracting sentiment from political speech.
