@@ -29,7 +29,7 @@ for i in range(0, 100):  # change depending on how many files it looks like exis
         status = r.headers['content-type']
 
 #        print("FILE TYPE: {}".format(status))
-        if status == 'application/zip; charset=utf-8':  # if the zip file of that name exists, the type will appear like this
+        if status == 'application/zip; charset=utf-8':  # if the zip file exists, the type will appear like this
             print("FILE FOUND")
             zip_ref = zipfile.ZipFile(io.BytesIO(r.content))
             zip_ref.extractall(save_loc)  # extract the file
@@ -37,5 +37,5 @@ for i in range(0, 100):  # change depending on how many files it looks like exis
             # delete the zip file now we have extracted it's data
 #            os.remove("{}\{}".format(save_loc, file_name_format.format(i, j)))
 
-        else:       # if the zip file doesn't exist it'll have a type of "text/html", because it generates an error page
+        else:  # if the zip file doesn't exist it'll have a type of "text/html", because it generates an error page
             print("FILE NOT FOUND")

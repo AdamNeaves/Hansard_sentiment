@@ -4,11 +4,12 @@ from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.classify import NaiveBayesClassifier
-from nltk.sentiment import SentimentAnalyzer
+# from nltk.sentiment import SentimentAnalyzer
 import pickle
 from nltk.sentiment.util import *
 import string
 import random
+import numpy
 
 print("USING NLTK VERSION {}".format(nltk.__version__))
 
@@ -107,18 +108,29 @@ def name_match(name_one, name_two):
     return same_surname and same_forname and same_hom
 
 
-def create_sentiment_model(pos_sentences, neg_sentences, model_save=None, train_percent=0.9):
+def create_sentiment_model(pos_sentences, neg_sentences, model_save=None, fold=5):
     features = create_feature_set(pos_sentences, neg_sentences)  # get the list of features
     #  shuffles the feature set for us before returning so it can be used
-    print("Splitting feature set into testing/training sets")
-    num_in_train_set = int(len(features)*train_percent)
-    training_set = features[:num_in_train_set]  # training set will be first x percent of feature list
-    testing_set  = features[num_in_train_set:]  # testing set will be everything that remains#
-    print("Number of training sentences: {}".format(len(training_set)))
-    print("Number of testing sentences:  {}".format(len(testing_set)))
-    print("TRAINING CLASSIFIER: PLEASE BE PATIENT")
-    classifier = NaiveBayesClassifier.train(training_set)
-    print("Classifier accuracy: {}%".format(nltk.classify.accuracy(classifier, testing_set)*100))
+    print("Splitting feature set into {} folds".format(fold))
+    folds = numpy.array_split(features, fold)  # split into folds for training
+
+    # for each fold, train it on all other folds, test it on this fold
+    for i, test_fold in enumerate(folds):
+        train_folds = folds[0:i] + folds[i+1:fold]
+        train_folds = [item for sublist in train_folds for item in sublist] # flatten list
+        print("Fold {}. Training on {} Instances.".format(i+1, len(train_folds)))
+        classifier = NaiveBayesClassifier.train(train_folds)
+        print("Fold Accuracy: {}%".format(nltk.classify.accuracy(classifier, test_fold)))
+
+    classifier = NaiveBayesClassifier.train(features)
+    # num_in_train_set = int(len(features)*train_percent)
+    # training_set = features[:num_in_train_set]  # training set will be first x percent of feature list
+    # testing_set  = features[num_in_train_set:]  # testing set will be everything that remains#
+    # print("Number of training sentences: {}".format(len(training_set)))
+    # print("Number of testing sentences:  {}".format(len(testing_set)))
+    # print("TRAINING CLASSIFIER: PLEASE BE PATIENT")
+    # classifier = NaiveBayesClassifier.train(training_set)
+    # print("Classifier accuracy: {}%".format(nltk.classify.accuracy(classifier, testing_set)*100))
     print("Classifier 10 Most informative Features:")
     classifier.show_most_informative_features(10)
     if model_save:
@@ -139,15 +151,21 @@ def create_feature_set(pos_doc, neg_doc):
     # get every word used in both positive and negative sentences
     with open(pos_doc, 'r', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
+        count = 0
         for row in reader:
             row_words = word_tokenize(row['Sentence'])
             all_words = all_words + row_words
+            count += 1
+        print("{} POSITIVE SENTENCES".format(count))
 
     with open(neg_doc, 'r', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
+        count = 0
         for row in reader:
             row_words = word_tokenize(row['Sentence'])
             all_words = all_words + row_words
+            count += 1
+        print("{} NEGATIVE SENTENCES".format(count))
 
     # order words by frequency
     all_words = nltk.FreqDist(all_words)
