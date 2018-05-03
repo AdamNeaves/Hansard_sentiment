@@ -13,6 +13,8 @@ class HansardSentimentAnalyser:
                 classifier_f = open(model_save, 'rb')
                 self.classifier = pickle.load(classifier_f)
                 classifier_f.close()
+                NLP.create_all_words_list(os.path.join(annotated_dir, "pos.csv"),
+                                          os.path.join(annotated_dir, "neg.csv"))
             except OSError as e:
                 print("Error: classifer not found at {}. Try again".format(e.filename))
 
@@ -35,7 +37,11 @@ class HansardSentimentAnalyser:
         sentences = NLP.sentence_split(paragraph)
         sentiments = []
         for sentence in sentences:
+            analysis = self.analyse(sentence)
             sentiments.append(self.analyse(sentence).max())
+            print("'{}' is {} at a probability of {}%".format(sentence,
+                                                              analysis.max(),
+                                                              round(analysis.prob(analysis.max()), 2)))
         num_pos = sentiments.count("POS")
         num_neg = sentiments.count("NEG") * -1
 
@@ -60,7 +66,7 @@ if __name__ == "__main__":
             print("Arg 2: {}".format(sys.argv[2]))
             exit()
 
-        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, True)
+        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, False)
     except IndexError:
         print("Not enough arguments to create the sentiment analysis! Try again")
         raise

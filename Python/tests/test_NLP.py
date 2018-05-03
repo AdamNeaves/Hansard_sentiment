@@ -1,4 +1,3 @@
-
 import unittest
 import NLP
 
@@ -50,7 +49,6 @@ class NLPSentenceSplitTestCase(unittest.TestCase):
 
 class NLPNameExtractTestCase(unittest.TestCase):
     """Tests for the NLP Module's Name Extractor Function"""
-    # NAME EXTRACTOR TESTS##############################################################################################
     def setUp(self):
         pass
 
@@ -103,6 +101,15 @@ class NLPNameExtractTestCase(unittest.TestCase):
 
         self.assertEqual(NLP.extract_name(test_string), test_string)
 
+    def test_empty_string(self):
+        test_string = ""
+
+        self.assertEqual(NLP.extract_name(test_string), test_string)
+
+    def test_not_string(self):
+        test_string = 4
+        self.assertEqual(NLP.extract_name(test_string), "")
+
 
 class NLPNameMatchTestCase(unittest.TestCase):
     """Tests for the NLP Module's Name Matching Function"""
@@ -145,6 +152,16 @@ class NLPNameMatchTestCase(unittest.TestCase):
     def test_name_match_diff_names_3(self):
         test_name_one = "Mr Thomas Ridgewell"
         test_name_two = "Mrs Ridgewell"
+        self.assertFalse(NLP.name_match(test_name_one, test_name_two))
+
+    def test_empty_string(self):
+        test_name_one = "Mr Thomas Ridgewell"
+        test_name_two = ""
+        self.assertFalse(NLP.name_match(test_name_one, test_name_two))
+
+    def test_not_string(self):
+        test_name_one = "Mr Thomas Ridgewell"
+        test_name_two = 4
         self.assertFalse(NLP.name_match(test_name_one, test_name_two))
 
 

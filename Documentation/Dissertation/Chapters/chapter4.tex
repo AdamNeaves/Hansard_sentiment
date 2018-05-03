@@ -12,5 +12,38 @@
 
 \section{Overall Approach to Testing}
 
+The main tactic for testing was to use Unit Tests. Unit testing involves breaking the software being tested down into pieces, called \emph{Units}, and then testing each piece \emph{In Isolation}\cite{Knupp2013}. The isolation is important, as it ensures that any failing tests are caused by the code being tested, rather than some other part of the system that might not be working. This isolation also means that tests should be able to be run in any order, and therefore makes sure that the code and test are written to avoid \emph{Side Effects}, where running a test might affect another part of the software.
 
-\subsection{Unit Tests}
+For these reasons, a package for Python called \href{https://docs.python.org/3/library/unittest.html}{Unittest} was used for writing the tests. It provides a framework for testing, including methods for \emph{Setting up} and \emph{Tearing Down} before and after the tests run. The set up method ensures that, before the tests are run, anything that needs to be initialised can be. The \emph{Tear Down} method is used to make sure that, after the tests are run, the state of the system has been returned to how it was before testing. Using these two methods, as well as the other parts of the \emph{Unittest} module, the unit tests can be run easily, and repeatably, without causing tests that pass to start failing, or vice versa.
+
+\section{Unit Tests}
+
+A framework to implement Unit testing for each module was created. However, due to time constraints, the cause of which is discussed in Section \ref{sec:evl_data_parser}, not all tests were implemented. Each suite of tests was created as a python script, named \emph{test\textunderscore XXX} where \emph{XXX} is the name of the module being tested. Each test script would import the \emph{unittest} module, as well as the module to be tested.
+
+In order to run the tests, a package called \emph{py-test} was installed. When running this package from the command line, it can search the directory for the suite of tests, and set up a virtual environment for the tests to run in, to ensure that references to the different modules would still work. This was used as the test scripts were stored in a separate folder, for organizational sake, but this meant that the references to the modules didn't work when trying to run the test scripts as normal python scripts. 
+
+\subsection{Natural Language Processing Module}
+
+The only module for which a reasonably full set of tests was written was the Natural Language Processing module. This module is the one which contains all the NLP methods required by the system, including the Sentence tokenization, and name matching methods. A test suite for each method was created, and a set of tests were created that tested not only normal functionality of the method, but tested edge cases that could cause the method to crash. For instance, leaving a string empty when the method expected contents.
+
+\subsubsection{Name Extraction}
+
+One of the methods tested was the Name Extraction method. This method was designed to accept a string as input, which contained a name and potentially other things, such as job title, and return a new string that was just the name.
+
+Most of the tests for this method provided a string with a name, and then compared the returned string with one that represented the expected result. Additionally, a test was written that tested what happened if the method was given an empty string, or a variable that was not a string.
+
+\subsubsection{Name Matcher}
+
+The name Matching method compares two strings that contain names, and returns a boolean value of \emph{True} if the names appear to refer to the same person, of \emph{False} if not.
+
+This method received extensive testing, due to the complexities of this task. Table \ref{tbl:name_match} in Section \ref{sec:imp_name_match} shows the sort of things that must be tested for. 
+Most of these tests used two strings, each representing a name. The tests would assert if the function returned the expected boolean value. The tests included matching names of the exact same format, some where the forename was absent from one name, and some where the only difference in the name was the honorific used. Additionally, a test for each possible edge case, such as empty strings and non-string objects, were also written.
+
+\subsubsection{Sentence Splitter}
+The Sentence Splitter method took a paragraph of test as an input, and returned an array of strings, in which each string is a separate sentence. This follows the rules set out in Section \ref{sec:imp_sentence_split}.
+
+The testing of this method involved a test string that contained one or more sentences, and an expected output to compare to the output of the method. It also tested all the special cases as mentioned in Section \ref{sec:imp_sentence_split}.
+
+\section{Testing Conclusion}
+
+Now that the testing methods have been described, this report will now move on to critically evaluate the progress of this report. The next chapter will highlight the difficulties encountered with the development of the project, and what, with hindsight, could be improved or done differently in order to produce a better result.

@@ -143,12 +143,8 @@ def create_sentiment_model(pos_sentences, neg_sentences, model_save=None, fold=5
     return classifier
 
 
-def create_feature_set(pos_doc, neg_doc):
-    print("Converting annotated data to feature lists")
+def create_all_words_list(pos_doc, neg_doc):
     global all_words
-    # our features will be a list of words, with true or false, saying if that word is in the sentence
-
-    # get every word used in both positive and negative sentences
     with open(pos_doc, 'r', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         count = 0
@@ -173,6 +169,14 @@ def create_feature_set(pos_doc, neg_doc):
     all_words = list(all_words.most_common())[:3000]  # get the 3000 most frequent words (in theory?)
     # print(all_words)
 
+
+def create_feature_set(pos_doc, neg_doc):
+    print("Converting annotated data to feature lists")
+    global all_words
+    # our features will be a list of words, with true or false, saying if that word is in the sentence
+    create_all_words_list(pos_doc, neg_doc)
+    # get every word used in both positive and negative sentences
+
     feature_sets = []
 
     with open(pos_doc, 'r', encoding="utf-8") as csvfile:
@@ -195,6 +199,7 @@ def create_feature_set(pos_doc, neg_doc):
 
 def convert_sentence_to_features(sentence):
     global all_words
+
     words = set(word_tokenize(sentence))
     filtered_words = []
     for word in words:

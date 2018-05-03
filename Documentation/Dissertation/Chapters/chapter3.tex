@@ -258,6 +258,7 @@ This Sentiment Analzyer was first trained on only a small set of training data d
 Naive Bayes, as described in Section \ref{sec:des_naive_bayes}, was the AI algorithm provided as a part of the NLTK library.
 
 \subsubsection{Creating Features}
+\label{sec:imp_create_features}
 
 Features, in the case of AI training, are a representation of the thing an AI is trying to learn to predict\cite{Mitchell1997}. For instance, if an AI algorithm was being trained to predict the weather based off current conditions, the current conditions would be the set of features, each separate condition such as  current temperature, barometric pressure, humidity etc. would be a feature. In the case of a supervised algorithm, such as Naive Bayes, it is provided with a list of features, and the class that is attributed to that set of features. So, for the example given, Table \ref{tbl:weather_feature} would be an example set of training data.
 
@@ -310,6 +311,7 @@ for i, test_fold in enumerate(folds):
 \end{lstlisting}
 
 \subsubsection{Testing Results}
+\label{sec:imp_AI_test_result}
 
 The algorithm was trained and tested using both \emph{10 fold} and \emph{5 fold} validation. Table \ref{tbl:naive_bayes_results_5} and \ref{tbl:naive_bayes_results_10} show the results from this training and testing. The total number of annotated sentences was 201.
 \begin{table}[ht]
@@ -354,7 +356,7 @@ As can be seen by these tables, the average accuracy when trained using 5-fold v
 To compare the results, a baseline called \emph{ZeroR}\cite{ZeroR2016} was used. This was used instead of a baseline of random guessing, as it takes into account potential bias in the annotated data. Effectively, \emph{ZeroR} classifies all instances as the most common class, hence the name \emph{Zero Rule}. In the annotated data used, \emph{106} of the sentences are classified as Positive, and \emph{95} are classified as Negative. This means that ZeroR classified all of the instances as Positive, as that is the class with the most instances. The maths of working out the probability of random guessing is shown in Figure \ref{fig:random_prob}, showing that random guessing gives a theoretical accuracy of \textbf{50.1\%}, whereas the Zero Rule baseline has an accuracy of \textbf{52.7\%}. Whilst this difference might not be a large one, it helps improve the analysis of the Naive Bayes algorithm.
 
 \begin{figure}[ht]
-$$(P(Class Is Positive)*P(Classified As Positive))+(P(Class Is Negative)*P(Classified As Negative)) $$
+$$(P(Class Is Positive)*P(Class As Positive))+(P(Class Is Negative)*P(Class As Negative)) $$
 $$(0.527*0.527)+(0.473*0.473)$$
 $$0.501$$
 \caption{Probability of correct classification based on random selection. $P(X)$ is the Probability of X}
