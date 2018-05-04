@@ -50,9 +50,9 @@ Additionally, it was decided early on during the design that only Spoken speech 
 \label{sec:des_annotation_tool}
 In Artificial Intelligence development, there is a concept known as \emph{Ground Truth}, which is a representation of the reality that an algorithm wants to predict; such as the changes to the stock market or the sentiment expressed by a piece of text. It's often commonly represented by the training data used to train an AI algorithm when using a supervised or semi-supervised algorithm. Thus, for this project, the ground truth must be decided upon and represented by a set of training and testing data.
 
-The Manual Annotation Tool (the MAT) is designed to allow a user to create said testing and training datasets from the parsed data. It should show a selection of speech to the user, and ask them to annotate it as either a positive sentiment, negative sentiment, or neutral sentiment. These choices will be recorded, and can then be used to train a machine learning algorithm to extract sentiment from the remaining data. It would also provide the option to edit the text, the MP's name, or the topic title, to allow the user to correct typos transfered from the original dataset.
+The Manual Annotation Tool (the MAT) is designed to allow a user to create said testing and training datasets from the parsed data. It should show a selection of speech to the user, and ask them to annotate it as either a positive sentiment, negative sentiment, or neutral sentiment. These choices will be recorded, and can then be used to train a machine learning algorithm to extract sentiment from the remaining data. It would also provide the option to edit the text, the MP's name, or the topic title, to allow the user to correct typos transferred from the original dataset.
 
-Originally, the MAT would display an entire paragraph of speech, displaying everything a Member of Parliament said about a topic on a particular day. However, this would often display too much text, with parts showing positive sentiment and other parts of the same text showing negative sentiment. Additionally it was realized that attempting to train an AI algorithm on these large blocks of text would be far too complex. For those reasons, the MAT was modified so that it would only display a single sentence at a time, allowing a more accurate way of annotating sentiment.
+Originally, the MAT would display an entire paragraph of speech, displaying everything a Member of Parliament said about a topic on a particular day. However, this would often display too much text, with parts showing positive sentiment and other parts of the same text showing negative sentiment. Additionally, it was realized that attempting to train an AI algorithm on these large blocks of text would be far too complex. For those reasons, the MAT was modified so that it would only display a single sentence at a time, allowing a more accurate way of annotating sentiment.
 
 The MAT is designed to accept the parsed data from the parser described in Section \ref{sec:des_data_parser}, and should break the speech found in the data down into sentences, then output the sentence and sentiment annotated to it as described in Section \ref{sec:des_anotate_data}
 
@@ -121,17 +121,17 @@ The formatting of the annotated data files was also designed at this stage. It w
 
 \textbf{Sentence, Sentiment, Member, Topic}
 
-As shown, it was decided that the best way of annotating full speech was to split it by sentence, so that each sentence would be annotated with its own sentiment. This would simplify the training process for the machine learning algorithms, as it was thought that trying to train it on too large a block of text would result in sub par results, as these larger blocks of text can often express multiple sentiments interwoven into the speech. Attempting to train on, or even annotate, these larger more complicated blocks of speech would mean having to decide what the most important sentiment expressed would be, or work out the average sentiment. Due to this, any AI algorithm attempting to train on this would be training on data that expressed a varied sentiment, rather than a more polarized sentiment expressed in a single sentence. Of course, it is still possible that a single sentence might express positive sentiment towards one thing and simultaneously a negative sentiment towards something else, but dealing with these issues would take a lot more work than can be done on this project. 
+As shown, it was decided that the best way of annotating full speech was to split it by sentence, so that each sentence would be annotated with its own sentiment. This would simplify the training process for the machine learning algorithms, as it was thought that trying to train it on too large a block of text would result in sub-par results, as these larger blocks of text can often express multiple sentiments interwoven into the speech. Attempting to train on, or even annotate, these larger more complicated blocks of speech would mean having to decide what the most important sentiment expressed would be, or work out the average sentiment. Due to this, any AI algorithm attempting to train on this would be training on data that expressed a varied sentiment, rather than a more polarized sentiment expressed in a single sentence. Of course, it is still possible that a single sentence might express positive sentiment towards one thing and simultaneously a negative sentiment towards something else, but dealing with these issues would take a lot more work than can be done on this project. 
 
 \section{User Interface}
 \label{sec:des_user_interface}
 Due to the complexity of the project, it was decided that the system would only be interacted with via the command line. This meant that, beyond basic menus, no GUI had to be designed for use. It was though that, should there be time during or after the project development, a GUI could be designed which worked with the existing functions, but it was not considered system critical to have a GUI.
 
-The search tool described in Section \ref{sec:des_search_tool} is designed to be the part used by most users, and so a mock up of the command line interface is shown in Figure \ref{fig:search_mockup}
+The search tool described in Section \ref{sec:des_search_tool} is designed to be the part used by most users, and so a mock-up of the command line interface is shown in Figure \ref{fig:search_mockup}
 
 \begin{figure}[ht]
 \includegraphics[width=\textwidth]{search_mockup}
-\caption{A mockup design of the Search tool, which would be the main user interface for the project}
+\caption{A mock-up design of the Search tool, which would be the main user interface for the project}
 \label{fig:search_mockup}
 \end{figure}
 
@@ -144,9 +144,9 @@ There are many potential algorithms that may be chosen for this project. It may 
 
 \subsubsection{Naive Bayes}
 \label{sec:des_naive_bayes}
-Naives Bayes is a supervised algorithm with uses the statistical analysis of Bayes Theorem as to classify data. It treats each feature as completely distinct, which isn't accurate for NLP, but will may suffice for development of the system.
+Naive Bayes is a supervised algorithm with uses the statistical analysis of Bayes Theorem as to classify data. It treats each feature as completely distinct, which isn't accurate for NLP, but will may suffice for development of the system.
 
-Bayes Theorem provides a way to calculate the probability of something occurring, for this project text being positive or negative, given it's prior probability, and the probability of it given the Data provided.\cite{Mitchell1997}. Text being classified as one thing or the other is usually called a \emph{Hypothesis} in this regard. The mathematical representation of Bayes Theorem can be seen in Figure \ref{fig:bayes_theorem}.
+Bayes Theorem provides a way to calculate the probability of something occurring, for this project text being positive or negative, given its prior probability, and the probability of it given the Data provided.\cite{Mitchell1997}. Text being classified as one thing or the other is usually called a \emph{Hypothesis} in this regard. The mathematical representation of Bayes Theorem can be seen in Figure \ref{fig:bayes_theorem}.
 \begin{figure}[ht]
 $$ P(h \mid D) = \frac{P(D \mid h) \, P(h)}{P(D)} $$
 \caption{Bayes Theorem}
@@ -155,7 +155,7 @@ $$ P(h \mid D) = \frac{P(D \mid h) \, P(h)}{P(D)} $$
 
 Where $P(h \mid D)$ is the probability of the Hypothesis (in the case of this assignment the prediction that a sentence is either Positive or Negative) holding true given the data provided. $P(D \mid h)$ is the probability that the data is true, given the hypothesis; and $P(h)$ and $P(D)$ are the probabilities of the Hypothesis and the Data respectfully.
 
-$P(h)$ is usually called the \emph{Prior Probability} of the Hypothesis, and reflects any background knowledge about the chance that the hypothesis is correct. In this project, this is likely to represent any form of bias in the training data, in that the prior probability of text being classified as positive would be equal to the percentage of training data that is labeled positive.
+$P(h)$ is usually called the \emph{Prior Probability} of the Hypothesis, and reflects any background knowledge about the chance that the hypothesis is correct. In this project, this is likely to represent any form of bias in the training data, in that the prior probability of text being classified as positive would be equal to the percentage of training data that is labelled positive.
 
 The Naive Bayes Classifier uses Bayes Theorem in a learning step in which the various probabilities of a class, such as \emph{positive} or \emph{negative}, are estimated, given the different attributes or the data\cite{Mitchell1997}. These estimations correspond to the learned hypothesis, which is then applied to the new instances of sentences to classify them.
 
