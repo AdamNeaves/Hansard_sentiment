@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hansard xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="hansard_v8.xsd">
-<section>
+<housecommons>
 	<date format="2018-05-04">Friday 4th May 2018</date>
-	<title>Topic One</title>
-	<member>Mr. John Smith</member>
-	<membercontribution>This is the first thing to be said by Mr. John Smith on Topic One.</membercontribution>
-	<member>Mr. Alan Jones</member>
-	<membercontribution>This is a response by Mr. Alan Jones, and is the second thing said about topic One</membercontribution>
-	<member>Mr. John Smith</member>
-	<membercontribution>This is the second thing to be said my Mr. John Smith</membercontribution>
-</section>
-<section>
-	<date format="2018-05-04">Friday 4th May 2018</date>
-	<title>Topic Two</title>
-	<member>Mr. John Smith</member>
-	<membercontribution>This is the first thing said by Mr. John Smith on topic Two. He is the only one Speaking on this topic</membercontribution>
-</section>
-<section>
+	<title>Oral Answers to Questions</title>
+	<section>
+		<title>Topic One</title>
+		<p><member>Mr. John Smith</member><membercontribution>This is the first thing to be said by Mr. John Smith on Topic One.</membercontribution></p>
+		<p><member>Mr. Alan Jones</member><membercontribution>This is a response by Mr. Alan Jones, and is the second thing said about topic One</membercontribution></p>
+		<p><member>Mr. John Smith</member><membercontribution>This is the second thing to be said by Mr. John Smith.</membercontribution></p>
+	</section>
+	<section>
+		<title>Topic Two</title>
+		<p><member>Mr. John Smith</member><membercontribution>This is the first thing said by Mr. John Smith on topic Two. He is the only one Speaking on this topic</membercontribution></p>
+	</section>
+</housecommons>
+
+<housecommons>
 	<date format="2018-05-05">Saturday 5th May 2018</date>
-	<title>Second Day</title>
-	<member>Mrs. Jeniffer Lawrence</member>
-	<membercontribution>This is the second day speech by Mrs. Lawrence.</membercontribution>
+	<title>Oral Answers to Questions</title>
+	<section>
+		<title>Second Day</title>
+		<p><member>Mrs. Jeniffer Lawrence</member><membercontribution>This is the second day speech by Mrs. Lawrence.</membercontribution></p>
+	</section>
+</housecommons>
+</hansard>

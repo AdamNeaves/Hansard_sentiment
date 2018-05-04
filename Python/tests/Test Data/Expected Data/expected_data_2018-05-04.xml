@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<date format="2018-05-04">
+<member membername="Mr. John Smith">
+ <topic title="Topic One">
+  <stance>
+  </stance>
+  <speech>
+   This is the first thing to be said by Mr. John Smith on Topic One.
+  </speech>
+  <speech>
+   This is the second thing to be said by Mr. John Smith.
+  </speech>
+ </topic>
+ <topic title="Topic Two">
+  <stance>
+  </stance>
+  <speech>
+   This is the first thing said by Mr. John Smith on topic Two. He is the only one Speaking on this topic
+  </speech>
+ </topic>
+</member>
+<member membername="Mr. Alan Jones">
+ <topic title="Topic One">
+  <stance>
+  </stance>
+  <speech>
+   This is a response by Mr. Alan Jones, and is the second thing said about topic One
+  </speech>
+ </topic>
+</member>
+</date>
