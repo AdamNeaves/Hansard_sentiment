@@ -9,11 +9,11 @@ from doctest import Example
 class SpeechParserTest(unittest.TestCase):
 
     def setUp(self):
-        self.Parser = Speech_Parser_BS.SpeechParser("./Test Data/Source Data/Test File")
+        self.Parser = Speech_Parser_BS.SpeechParser("./tests/Test Data/Source Data/Test File")
         self.Parser.find_files()
 
     def tearDown(self):
-        directory = ".\Test Data\Parsed Speech\Test File"
+        directory = "./tests/Test Data/Parsed Speech/Test File"
         for file in os.listdir(directory):
             os.remove(os.path.join(directory,file))
         os.rmdir(directory)

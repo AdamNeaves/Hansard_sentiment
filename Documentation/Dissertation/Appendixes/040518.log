@@ -1,0 +1,164 @@
+============================= test session starts ==============================
+platform linux -- Python 3.5.2, pytest-2.8.7, py-1.4.31, pluggy-0.3.1 -- /usr/bin/python3
+cachedir: .cache
+rootdir: /home/adam/Documents/Hansard-Sentiment/Python, inifile: 
+collecting ... collected 25 items
+
+tests/test_NLP.py::NLPSentenceSplitTestCase::test_sentence_split_contains_quote PASSED
+tests/test_NLP.py::NLPSentenceSplitTestCase::test_sentence_split_hon PASSED
+tests/test_NLP.py::NLPSentenceSplitTestCase::test_sentence_split_missing_space PASSED
+tests/test_NLP.py::NLPSentenceSplitTestCase::test_sentence_split_normal PASSED
+tests/test_NLP.py::NLPSentenceSplitTestCase::test_sentence_split_percent PASSED
+tests/test_NLP.py::NLPSentenceSplitTestCase::test_sentence_split_single_sentence PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_empty_string PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_extract_name_dr PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_extract_name_mr PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_extract_name_mrs PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_extract_name_no_honorific PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_extract_name_only_name PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_extract_name_sir PASSED
+tests/test_NLP.py::NLPNameExtractTestCase::test_not_string FAILED
+tests/test_NLP.py::NLPNameMatchTestCase::test_empty_string FAILED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_diff_format_1 PASSED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_diff_format_2 FAILED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_diff_format_3 PASSED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_diff_names_1 PASSED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_diff_names_2 PASSED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_diff_names_3 PASSED
+tests/test_NLP.py::NLPNameMatchTestCase::test_name_match_same PASSED
+tests/test_NLP.py::NLPNameMatchTestCase::test_not_string FAILED
+tests/test_Parser.py::SpeechParserTest::test_parser_find_files PASSED
+tests/test_Parser.py::SpeechParserTest::test_parser_parse_files SKIPPED
+
+=================================== FAILURES ===================================
+____________________ NLPNameExtractTestCase.test_not_string ____________________
+
+self = <test_NLP.NLPNameExtractTestCase testMethod=test_not_string>
+
+    def test_not_string(self):
+        test_string = 4
+>       self.assertEqual(NLP.extract_name(test_string), "")
+
+tests/test_NLP.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+NLP.py:40: in extract_name
+    match = re.search(name_rex, text)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pattern = re.compile('(\\bMr[ .]|\\bMrs[ .]|\\bSir[ .]|\\bDr[ .])[^!"#$%&\'()*+,/:;<=>?@[\\]^_`{|}~\\\\\\n]+', re.IGNORECASE)
+string = 4, flags = 0
+
+    def search(pattern, string, flags=0):
+        """Scan through string looking for a match to the pattern, returning
+        a match object, or None if no match was found."""
+>       return _compile(pattern, flags).search(string)
+E       TypeError: expected string or bytes-like object
+
+/usr/lib/python3.5/re.py:173: TypeError
+____________________ NLPNameMatchTestCase.test_empty_string ____________________
+
+self = <test_NLP.NLPNameMatchTestCase testMethod=test_empty_string>
+
+    def test_empty_string(self):
+        test_name_one = "Mr Thomas Ridgewell"
+        test_name_two = ""
+>       self.assertFalse(NLP.name_match(test_name_one, test_name_two))
+
+tests/test_NLP.py:160: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name_one = 'Mr Thomas Ridgewell', name_two = ''
+
+    def name_match(name_one, name_two):
+        # we assume the name has already been extracted using the above function. Maybe we should use that now anyway?
+        if name_one == name_two:
+            return True  # if they are the exact same then of course they match
+        # if they are not the exact same, that doesn't quite mean they are different
+        # could be a full name vs just surname (Mr John Smith vs Mr Smith)
+        # so check if name two contains the surname from name one?
+        # also, potentially make sure the first names are the same too. If we have John Smith and Matt Smith we need to
+        # make sure their separate speech is categorised separately
+    
+        name_one_words = name_one.split()
+        name_two_words = name_two.split()
+    
+        # ideally, names will always be either 2 or three words, one honorific at the start, and a surname at the end
+        # with maybe a forename between the two
+        if len(name_one_words) == 2:
+            # two words means honorific and surname, right? right
+            hon_one = name_one_words[0]
+            forname_one = None
+            surname_one = name_one_words[1]
+        elif len(name_one_words) == 3:
+            hon_one = name_one_words[0]
+            forname_one = name_one_words[1]
+            surname_one = name_one_words[2]
+        else:
+            try:
+                hon_one = name_one_words[0]
+                surname_one = name_one_words[-1]
+                forname_one = None
+            except IndexError:
+                print("ERROR: Index out of bounds. Is the name blank?")
+                print("Name causing error: {}".format(name_one))
+                raise
+    
+        if len(name_two_words) == 2:
+            # two words means honorific and surname, right? right
+            hon_two = name_two_words[0]
+            forname_two = None
+            surname_two = name_two_words[1]
+        elif len(name_two_words) == 3:
+            hon_two = name_two_words[0]
+            forname_two = name_two_words[1]
+            surname_two = name_two_words[2]
+        else:
+            try:
+>               hon_two = name_two_words[0]
+E               IndexError: list index out of range
+
+NLP.py:92: IndexError
+----------------------------- Captured stdout call -----------------------------
+ERROR: Index out of bounds.
+Name causing error: 
+______________ NLPNameMatchTestCase.test_name_match_diff_format_2 ______________
+
+self = <test_NLP.NLPNameMatchTestCase testMethod=test_name_match_diff_format_2>
+
+    def test_name_match_diff_format_2(self):
+        test_name_one = "Mr. Thomas Ridgewell"
+        test_name_two = "Mr. T. Ridgewell"
+>       self.assertTrue(NLP.name_match(test_name_one, test_name_two))
+E       AssertionError: False is not true
+
+tests/test_NLP.py:135: AssertionError
+_____________________ NLPNameMatchTestCase.test_not_string _____________________
+
+self = <test_NLP.NLPNameMatchTestCase testMethod=test_not_string>
+
+    def test_not_string(self):
+        test_name_one = "Mr Thomas Ridgewell"
+        test_name_two = 4
+>       self.assertFalse(NLP.name_match(test_name_one, test_name_two))
+
+tests/test_NLP.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name_one = 'Mr Thomas Ridgewell', name_two = 4
+
+    def name_match(name_one, name_two):
+        # we assume the name has already been extracted using the above function. Maybe we should use that now anyway?
+        if name_one == name_two:
+            return True  # if they are the exact same then of course they match
+        # if they are not the exact same, that doesn't quite mean they are different
+        # could be a full name vs just surname (Mr John Smith vs Mr Smith)
+        # so check if name two contains the surname from name one?
+        # also, potentially make sure the first names are the same too. If we have John Smith and Matt Smith we need to
+        # make sure their separate speech is categorised separately
+    
+        name_one_words = name_one.split()
+>       name_two_words = name_two.split()
+E       AttributeError: 'int' object has no attribute 'split'
+
+NLP.py:58: AttributeError
+================ 4 failed, 20 passed, 1 skipped in 1.09 seconds ================
