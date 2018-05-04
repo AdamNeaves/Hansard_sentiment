@@ -66,7 +66,7 @@ if __name__ == "__main__":
             print("Arg 2: {}".format(sys.argv[2]))
             exit()
 
-        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, False)
+        sentiment_analyser = HansardSentimentAnalyser(model_location, annotated_directory, True)
     except IndexError:
         print("Not enough arguments to create the sentiment analysis! Try again")
         raise
